@@ -52,10 +52,24 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Item.cs" />
+    <Compile Include="Juego.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Juego.Designer.cs">
+      <DependentUpon>Juego.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Jugador.cs" />
+    <Compile Include="Mapa.cs" />
+    <Compile Include="NodoMapa.cs" />
+    <Compile Include="Poder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Juego.resx">
+      <DependentUpon>Juego.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -80,11 +94,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="Resources\backGroundTRON.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="Resources\backGroundTRON.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\TronGame.png" />
     <None Include="Resources\PlayP2.png" />
     <None Include="Resources\PlayP1.png" />
