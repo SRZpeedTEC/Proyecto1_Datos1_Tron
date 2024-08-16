@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
+using System.Media;
 
 namespace Proyecto1_Datos1_Tron
 {
@@ -11,7 +12,7 @@ namespace Proyecto1_Datos1_Tron
     {
         public int Velocidad { get; set; }
         public int Combustible { get; set; }
-        public LinkedList<Rectangle> Estela { get; set; }
+        public ListaEnlazada<Rectangle> Estela { get; set; }
         public Queue<Item> Items { get; set; }
         public Stack<Poder> Poderes { get; set; }
         public string DireccionActual { get; set; }
@@ -26,7 +27,13 @@ namespace Proyecto1_Datos1_Tron
         public Keys DownKey { get; set; }
         public Keys LeftKey { get; set; }
         public Keys RightKey { get; set; }
+
+        public bool vivo { get; set; }
         private Mapa mapa { get; set; }
+
+        public SoundPlayer sonidoCambioDireccion = new SoundPlayer(@"Resources\AudioMotos.wav");
+        public SoundPlayer sonidoColision = new SoundPlayer(@"Resources\SonidoColision.wav");
+
 
 
 
@@ -39,12 +46,13 @@ namespace Proyecto1_Datos1_Tron
             Random rnd = new Random();
             Velocidad = rnd.Next(1, 11);
             Combustible = 100;
+            vivo = true;
 
-            Estela = new LinkedList<Rectangle>();
-            Estela.AddFirst(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));
+            Estela = new ListaEnlazada<Rectangle>();
+            Estela.AgregarPrimero(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));
             for(int x = 0; x < 3; x++)
             {
-                Estela.AddLast(new Rectangle(posicionInicialX, posicionInicialY, TamañoEstela, TamañoEstela));    
+                Estela.AgregarUltimo(new Rectangle(posicionInicialX, posicionInicialY, TamañoEstela, TamañoEstela));    
             }
 
 
@@ -69,124 +77,146 @@ namespace Proyecto1_Datos1_Tron
 
         public void Mover()
         {
-            Rectangle cabezaActual = Estela.First.Value;
+            Rectangle cabezaActual = Estela.ObtenerPrimero();
             Rectangle nuevaPosicion = cabezaActual;
-
-            switch (DireccionActual)
+            if(vivo != false)
             {
-                case "Arriba":
-                    nuevaPosicion = new Rectangle(cabezaActual.X, cabezaActual.Y - TamañoCuadrado, TamañoCuadrado, TamañoCuadrado);
-                    break;
-                case "Abajo":
-                    nuevaPosicion = new Rectangle(cabezaActual.X, cabezaActual.Y + TamañoCuadrado, TamañoCuadrado, TamañoCuadrado);
-                    break;
-                case "Izquierda":
-                    nuevaPosicion = new Rectangle(cabezaActual.X - TamañoCuadrado, cabezaActual.Y, TamañoCuadrado, TamañoCuadrado);
-                    break;
-                case "Derecha":
-                    nuevaPosicion = new Rectangle(cabezaActual.X + TamañoCuadrado, cabezaActual.Y, TamañoCuadrado, TamañoCuadrado);
-                    break;
-            }
-
-            NodoMapa nodoDestino = mapa.ObtenerNodo(nuevaPosicion);
-
-            if (nodoDestino != null && nodoDestino.ocupado != true)
-            {
-                // Dejar la estela en la posición actual
-                nodoDestino.ocupado = true;
-
-                // Agregar nueva posición a la estela
-                Estela.AddFirst(nuevaPosicion);
-
-                Rectangle ultimoSegmento = Estela.Last.Value;
-                NodoMapa nodoUltimoSegmento = mapa.ObtenerNodo(ultimoSegmento);
-                if (nodoUltimoSegmento != null)
+                switch (DireccionActual)
                 {
-                    nodoUltimoSegmento.ocupado = false; // Liberar el nodo
+                    case "Arriba":
+                        nuevaPosicion = new Rectangle(cabezaActual.X, cabezaActual.Y - TamañoCuadrado, TamañoCuadrado, TamañoCuadrado);
+                        break;
+                    case "Abajo":
+                        nuevaPosicion = new Rectangle(cabezaActual.X, cabezaActual.Y + TamañoCuadrado, TamañoCuadrado, TamañoCuadrado);
+                        break;
+                    case "Izquierda":
+                        nuevaPosicion = new Rectangle(cabezaActual.X - TamañoCuadrado, cabezaActual.Y, TamañoCuadrado, TamañoCuadrado);
+                        break;
+                    case "Derecha":
+                        nuevaPosicion = new Rectangle(cabezaActual.X + TamañoCuadrado, cabezaActual.Y, TamañoCuadrado, TamañoCuadrado);
+                        break;
                 }
 
-                // Remover el último segmento de la estela
-                Estela.RemoveLast();
-            }
-        }
+                NodoMapa nodoDestino = mapa.ObtenerNodo(nuevaPosicion);
 
-        public bool Colision()
-        {
-            // Comprobar si la cabeza de la estela colisiona con alguna otra posición de la estela
-            Rectangle cabeza = Estela.First.Value;
-            foreach (var segment in Estela)
-            {
-                if (cabeza.X == segment.X && cabeza.Y == segment.Y)
-                { Console.WriteLine("Colision"); return true;}    
-            }
+                if (nodoDestino != null && nodoDestino.ocupado != true)
+                {
+                    // Dejar la estela en la posición actual
+                    nodoDestino.ocupado = true;
 
-            return false;
+                    // Agregar nueva posición a la estela
+                    Estela.AgregarPrimero(nuevaPosicion);
+
+                    Rectangle ultimoSegmento = Estela.ObtenerUltimo();
+                    NodoMapa nodoUltimoSegmento = mapa.ObtenerNodo(ultimoSegmento);
+                    if (nodoUltimoSegmento != null)
+                    {
+                        nodoUltimoSegmento.ocupado = false; // Liberar el nodo
+                    }
+
+                    // Remover el último segmento de la estela
+                    Estela.RemoverUltimo();
+                }
+                else if (nodoDestino == null || nodoDestino.ocupado == true)
+                {
+                    Console.WriteLine("Colision");
+                    vivo = false;
+                    DestruccionMoto();
+                }
+            }
         }
 
         public void Dibujar(Graphics g)
         {
-            foreach (var segmento in Estela.Skip(1))
+            if (vivo != false)
             {
-                g.FillRectangle(colorEstela, segmento);
-            }
+                foreach (var segmento in Estela.Salto(0))
+                {
+                    g.FillRectangle(colorEstela, segmento);
+                }
 
-                  
 
-            // Dibujar la cabeza de la moto
-            Rectangle cabeza = Estela.First.Value;
-            // Escalar la cabeza de la moto para que sea más grande visualmente
-            int cabezaWidth = (int)(cabeza.Width * 1.75);
-            int cabezaHeight = (int)(cabeza.Height * 1.75);
-            cabeza = new Rectangle(
-                cabeza.X + (cabeza.Width - cabezaWidth) / 2,
-                cabeza.Y + (cabeza.Height - cabezaHeight) / 2,
-                cabezaWidth,
-                cabezaHeight
 
-            );
+                // Dibujar la cabeza de la moto
+                Rectangle cabeza = Estela.ObtenerPrimero();
+                // Escalar la cabeza de la moto para que sea más grande visualmente
+                int cabezaWidth = (int)(cabeza.Width * 1.75);
+                int cabezaHeight = (int)(cabeza.Height * 1.75);
+                cabeza = new Rectangle(
+                    cabeza.X + (cabeza.Width - cabezaWidth) / 2,
+                    cabeza.Y + (cabeza.Height - cabezaHeight) / 2,
+                    cabezaWidth,
+                    cabezaHeight
 
-            // Dibujar la cabeza de la moto
-            switch (DireccionActual)
-            {
-                case "Derecha":
-                    g.DrawImage(MotoSpriteRIGHT, cabeza);
-                    break;
-                case "Izquierda":
-                    g.DrawImage(MotoSpriteLEFT, cabeza);
-                    break;
-                case "Abajo":
-                    g.DrawImage(MotoSpriteDOWN, cabeza);
-                    break;
-                case "Arriba":
-                    g.DrawImage(MotoSpriteUP, cabeza);
-                    break;
+                );
+
+                // Dibujar la cabeza de la moto
+                switch (DireccionActual)
+                {
+                    case "Derecha":
+                        g.DrawImage(MotoSpriteRIGHT, cabeza);
+                        break;
+                    case "Izquierda":
+                        g.DrawImage(MotoSpriteLEFT, cabeza);
+                        break;
+                    case "Abajo":
+                        g.DrawImage(MotoSpriteDOWN, cabeza);
+                        break;
+                    case "Arriba":
+                        g.DrawImage(MotoSpriteUP, cabeza);
+                        break;
+                }
             }
         }
+            
         public virtual void CambiarDireccion(Keys key)
         {
-            if (key == UpKey && DireccionProhibida != "Arriba")
-            {
-                DireccionActual = "Arriba";
-                DireccionProhibida = "Abajo";
+            if (vivo != false) {
+                if (key == UpKey && DireccionProhibida != "Arriba")
+                {
+                    sonidoCambioDireccion.Play();
+                    DireccionActual = "Arriba";
+                    DireccionProhibida = "Abajo";
+                }
+                else if (key == DownKey && DireccionProhibida != "Abajo")
+                {
+                    sonidoCambioDireccion.Play();
+                    DireccionActual = "Abajo";
+                    DireccionProhibida = "Arriba";
+                }
+                else if (key == RightKey && DireccionProhibida != "Derecha")
+                {
+                    sonidoCambioDireccion.Play();
+                    DireccionActual = "Derecha";
+                    DireccionProhibida = "Izquierda";
+                }
+                else if (key == LeftKey && DireccionProhibida != "Izquierda")
+                {
+                    sonidoCambioDireccion.Play();
+                    DireccionActual = "Izquierda";
+                    DireccionProhibida = "Derecha";
+                }
             }
-            else if (key == DownKey && DireccionProhibida != "Abajo")
-            {
-                DireccionActual = "Abajo";
-                DireccionProhibida = "Arriba";
-            }
-            else if (key == RightKey && DireccionProhibida != "Derecha")
-            {
-                DireccionActual = "Derecha";
-                DireccionProhibida = "Izquierda";
-            }
-            else if (key == LeftKey && DireccionProhibida != "Izquierda")
-            {
-                DireccionActual = "Izquierda";
-                DireccionProhibida = "Derecha";
-            }
+            
 
         }
 
+        public void DestruccionMoto()
+        {
+            if (vivo == false)
+            {
+                while (Estela.Contador > 0)
+                {
+                    Rectangle segmento = Estela.ObtenerPrimero();
+                    NodoMapa nodoSegmento = mapa.ObtenerNodo(segmento);
+                    nodoSegmento.ocupado = false;
+                    Estela.RemoverPrimero();
+                    sonidoCambioDireccion.Stop();
+                    sonidoColision.Play();
+                    
+                }
+            }
+        }
     }
 }
 

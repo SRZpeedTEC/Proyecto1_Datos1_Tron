@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace Proyecto1_Datos1_Tron
 {
@@ -15,11 +16,12 @@ namespace Proyecto1_Datos1_Tron
         private Mapa mapa;
         private List<Jugador> jugadores;
         private Timer movimientoTimer;
+        public SoundPlayer sonidoCambioDireccion = new SoundPlayer(@"Resources\AudioMotos.wav");
 
         public FormGame()
         {
             InitializeComponent();
-            mapa = new Mapa(50, 30, 20); // Tamaño del mapa con nodos de 20x20 píxeles
+            mapa = new Mapa(58, 34, 20); // Tamaño del mapa con nodos de 20x20 píxeles
             jugadores = new List<Jugador>();
 
             // Crear jugadores en el mapa
@@ -33,8 +35,9 @@ namespace Proyecto1_Datos1_Tron
             pictureBox1.Paint += new PaintEventHandler(PictureBox1_Paint);
 
             movimientoTimer = new Timer();
-            movimientoTimer.Interval = 100; // Ajusta este valor según la velocidad deseada
+            movimientoTimer.Interval = 50; // Ajusta este valor según la velocidad deseada
             movimientoTimer.Tick += new EventHandler(OnTimerTick);
+            sonidoCambioDireccion.Play();
             movimientoTimer.Start();
         }
 
@@ -63,6 +66,11 @@ namespace Proyecto1_Datos1_Tron
         }
         private void PictureBox1_Paint(object sender, PaintEventArgs e)
         {
+            foreach (var nodo in mapa.nodosMapa)
+            {
+                e.Graphics.DrawRectangle(Pens.DarkSlateBlue, nodo.RectanguloMapa);
+                
+            }
             Rectangle cabezaRect = new Rectangle();
             // Dibujar la moto y la estela en el mapa
             foreach (var jugador in jugadores)
@@ -70,11 +78,17 @@ namespace Proyecto1_Datos1_Tron
                 jugador.Dibujar(e.Graphics);
 
             }
+            
            
         }
 
 
         private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
         {
 
         }

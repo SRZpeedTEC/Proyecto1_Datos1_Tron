@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -10,7 +9,7 @@ namespace Proyecto1_Datos1_Tron
 {
     public class Mapa
     {
-        public LinkedList<NodoMapa> nodosMapa { get; set; } // Constructor del mapa, indica el ancho, el alto y el tamaño de los nodos 
+        public ListaEnlazada<NodoMapa> nodosMapa { get; set; } // Constructor del mapa, indica el ancho, el alto y el tamaño de los nodos 
         public int ancho { get; set; }
         public int alto { get; set; }
         public int tamanoNodo { get; set; }
@@ -21,7 +20,7 @@ namespace Proyecto1_Datos1_Tron
             this.alto = alto;
             this.tamanoNodo = tamanoNodo;
 
-            nodosMapa = new LinkedList<NodoMapa>();     // Crea una lista de nodos que representaran el mapa 
+            nodosMapa = new ListaEnlazada<NodoMapa>();     // Crea una lista de nodos que representaran el mapa 
             NodoMapa[,] nodosArreglo = new NodoMapa[ancho, alto];   // Crea una matriz de nodos que representaran el mapa 
 
             for (int x = 0; x < ancho; x++)     // crear los nodos del mapa con la Clase nodoMapa, les asigna una posicion en la matriz, en la lista enlazadda y una representacion grafica de un rectangulo
@@ -31,7 +30,7 @@ namespace Proyecto1_Datos1_Tron
                     Rectangle rect = new Rectangle(x * tamanoNodo, y * tamanoNodo, tamanoNodo, tamanoNodo);
                     NodoMapa nuevoNodo = new NodoMapa(rect);
                     nodosArreglo[x, y] = nuevoNodo;
-                    nodosMapa.AddLast(nuevoNodo);
+                    nodosMapa.AgregarUltimo(nuevoNodo);
                 }
             }
 
@@ -71,5 +70,6 @@ namespace Proyecto1_Datos1_Tron
             }
             return null;
         }
+        
     }
 }

@@ -61,6 +61,15 @@ namespace Proyecto1_Datos1_Tron.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream AudioMotos {
+            get {
+                return ResourceManager.GetStream("AudioMotos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap backGroundTRON {
@@ -97,6 +106,15 @@ namespace Proyecto1_Datos1_Tron.Properties {
             get {
                 object obj = ResourceManager.GetObject("PlayP2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream SonidoColision {
+            get {
+                return ResourceManager.GetStream("SonidoColision", resourceCulture);
             }
         }
         
