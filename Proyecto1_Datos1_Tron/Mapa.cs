@@ -71,5 +71,18 @@ namespace Proyecto1_Datos1_Tron
             return null;
         }
         
+        public NodoMapa ObtenerNodoDisponible()
+        {
+            Random random = new Random();
+            var NodosDisponibles = nodosMapa.Where(n => !n.ocupado).ToList();
+
+            if (NodosDisponibles.Count > 0)
+            {
+                int indiceAleatorio = random.Next(NodosDisponibles.Count);
+                return NodosDisponibles[indiceAleatorio];
+            }
+            return null;
+        }
+
     }
 }

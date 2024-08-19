@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Proyecto1_Datos1_Tron.EstructurasDeDatos
+namespace Proyecto1_Datos1_Tron
 {
     public class Pila<T>
     {

@@ -15,11 +15,16 @@ namespace Proyecto1_Datos1_Tron
         public NodoMapa derecha { get; set; }
         public Rectangle RectanguloMapa { get; set; }
         public bool ocupado { get; set; }
+        public bool ocupadoItem { get; set; }
+        public Item item { get; set; }
 
         public NodoMapa(Rectangle rectanguloMapa)
         {
             this.RectanguloMapa = rectanguloMapa;
             this.ocupado = false;
+            this.ocupadoItem = false;
+            this.item = null;
+
         }
     }
 }

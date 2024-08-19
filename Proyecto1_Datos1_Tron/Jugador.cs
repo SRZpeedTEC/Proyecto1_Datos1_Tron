@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,10 +10,13 @@ namespace Proyecto1_Datos1_Tron
     public class Jugador
     {
         public int Velocidad { get; set; }
+        public int CombustibleTanque { get; set; }
         public int Combustible { get; set; }
+        public int Kilometraje = 0;
         public ListaEnlazada<Rectangle> Estela { get; set; }
-        public Queue<Item> Items { get; set; }
-        public Stack<Poder> Poderes { get; set; }
+        public int TamanoEstela = 3; // Tamaño de la estela
+        public Cola<Item> Items { get; set; }
+        public Pila<Poder> Poderes { get; set; }
         public string DireccionActual { get; set; }
         public string DireccionProhibida { get; set; }
         public Image MotoSpriteUP { get; set; }
@@ -29,7 +31,7 @@ namespace Proyecto1_Datos1_Tron
         public Keys RightKey { get; set; }
 
         public bool vivo { get; set; }
-        private Mapa mapa { get; set; }
+        public Mapa mapaJuego { get; set; }
 
         public SoundPlayer sonidoCambioDireccion = new SoundPlayer(@"Resources\AudioMotos.wav");
         public SoundPlayer sonidoColision = new SoundPlayer(@"Resources\SonidoColision.wav");
@@ -39,30 +41,31 @@ namespace Proyecto1_Datos1_Tron
 
 
         private const int TamañoCuadrado = 20; // Tamaño del cuadrado de colisión
-        private const int TamañoEstela = 3; // Tamaño de la estela
+        
 
-        public Jugador(Mapa mapa, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey)
+        public Jugador(Mapa mapaJuego, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey)
         {
             Random rnd = new Random();
             Velocidad = rnd.Next(1, 11);
-            Combustible = 100;
+            CombustibleTanque = 100;
+            Combustible = CombustibleTanque;
             vivo = true;
 
             Estela = new ListaEnlazada<Rectangle>();
             Estela.AgregarPrimero(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));
-            for(int x = 0; x < 3; x++)
+            for(int x = 0; x < TamanoEstela; x++)
             {
-                Estela.AgregarUltimo(new Rectangle(posicionInicialX, posicionInicialY, TamañoEstela, TamañoEstela));    
+                Estela.AgregarUltimo(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));    
             }
 
 
-            Items = new Queue<Item>();
-            Poderes = new Stack<Poder>();
+            Items = new Cola<Item>();
+            Poderes = new Pila<Poder>();
 
             this.DireccionActual = DireccionActual;
             this.DireccionProhibida = DireccionProhibida;
             this.colorEstela = colorEstela;
-            this.mapa = mapa;
+            this.mapaJuego = mapaJuego;
 
             MotoSpriteUP = Image.FromFile(@"Resources\motoSprite.png");
             MotoSpriteDOWN = Image.FromFile(@"Resources\motoSpriteDown.png");
@@ -97,9 +100,22 @@ namespace Proyecto1_Datos1_Tron
                         break;
                 }
 
-                NodoMapa nodoDestino = mapa.ObtenerNodo(nuevaPosicion);
+                NodoMapa nodoDestino = mapaJuego.ObtenerNodo(nuevaPosicion);
 
-                if (nodoDestino != null && nodoDestino.ocupado != true)
+                if (nodoDestino != null && nodoDestino.ocupadoItem == true)
+                {
+                    Console.WriteLine("Item Recogido");
+                    Item itemRecogido = nodoDestino.item;
+                    itemRecogido.EfectoItem(this);
+                    nodoDestino.ocupadoItem = false;
+                    nodoDestino.item = null;
+                    Items.AgregarCola(itemRecogido);
+                    FormGame form = (FormGame)Application.OpenForms["FormGame"];
+                    form.itemsLista.Remove(itemRecogido);
+
+                }
+
+                else if (nodoDestino != null && nodoDestino.ocupado != true)
                 {
                     // Dejar la estela en la posición actual
                     nodoDestino.ocupado = true;
@@ -108,7 +124,7 @@ namespace Proyecto1_Datos1_Tron
                     Estela.AgregarPrimero(nuevaPosicion);
 
                     Rectangle ultimoSegmento = Estela.ObtenerUltimo();
-                    NodoMapa nodoUltimoSegmento = mapa.ObtenerNodo(ultimoSegmento);
+                    NodoMapa nodoUltimoSegmento = mapaJuego.ObtenerNodo(ultimoSegmento);
                     if (nodoUltimoSegmento != null)
                     {
                         nodoUltimoSegmento.ocupado = false; // Liberar el nodo
@@ -116,6 +132,7 @@ namespace Proyecto1_Datos1_Tron
 
                     // Remover el último segmento de la estela
                     Estela.RemoverUltimo();
+                    Kilometraje++;
                 }
                 else if (nodoDestino == null || nodoDestino.ocupado == true)
                 {
@@ -123,7 +140,48 @@ namespace Proyecto1_Datos1_Tron
                     vivo = false;
                     DestruccionMoto();
                 }
+                
+
+
+                /* else if (nodoDestino != null && nodoDestino.ocupadoPoder == true)
+                {
+                    Poder poder = nodoDestino.Poder;
+                    poder.EfectoPoder(this);
+                    nodoDestino.ocupadoPoder = false;
+                } */
             }
+        }
+
+        public void AumentarEstela(int Agregado)
+        {
+            int TamanoEstelaOriginal = TamanoEstela;
+            TamanoEstela+= Agregado;
+            
+            for (int x = TamanoEstelaOriginal; x < TamanoEstela; x++)
+            {
+                Estela.AgregarUltimo(new Rectangle(Estela.ObtenerUltimo().X, Estela.ObtenerUltimo().Y, TamañoCuadrado, TamañoCuadrado));
+            }
+        }
+        
+
+        public void GastoCombustible()
+        {
+            if (Kilometraje == 5)
+            {
+                Combustible--;
+                Kilometraje = 0;
+            }
+            else if (Combustible == 0)
+            {
+                vivo = false;
+                DestruccionMoto();
+            }
+        }
+        
+        public void ActualizarCombustible(Label lblCombustible, ProgressBar progressBarCombustible)
+        {
+            lblCombustible.Text = $"Combustible: {Combustible} / {CombustibleTanque}";
+            progressBarCombustible.Value = Combustible;
         }
 
         public void Dibujar(Graphics g)
@@ -208,7 +266,7 @@ namespace Proyecto1_Datos1_Tron
                 while (Estela.Contador > 0)
                 {
                     Rectangle segmento = Estela.ObtenerPrimero();
-                    NodoMapa nodoSegmento = mapa.ObtenerNodo(segmento);
+                    NodoMapa nodoSegmento = mapaJuego.ObtenerNodo(segmento);
                     nodoSegmento.ocupado = false;
                     Estela.RemoverPrimero();
                     sonidoCambioDireccion.Stop();

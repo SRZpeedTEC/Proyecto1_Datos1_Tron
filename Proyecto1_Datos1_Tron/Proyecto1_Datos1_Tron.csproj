@@ -55,6 +55,9 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Item.cs" />
+    <Compile Include="Items\Bomba.cs" />
+    <Compile Include="Items\CrecimientoEstela.cs" />
+    <Compile Include="Items\RecargaCombustible.cs" />
     <Compile Include="Juego.cs">
       <SubType>Form</SubType>
     </Compile>

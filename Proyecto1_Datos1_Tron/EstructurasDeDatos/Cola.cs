@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Proyecto1_Datos1_Tron.EstructurasDeDatos
+namespace Proyecto1_Datos1_Tron
 {
     public class Cola<T>
     {
@@ -37,6 +37,14 @@ namespace Proyecto1_Datos1_Tron.EstructurasDeDatos
                 throw new InvalidOperationException("La cola esta vacia");
             }
             return elementos.ObtenerPrimero();
+        }
+        public T FondoCola()
+        {
+            if (VacioCola())
+            {
+                throw new InvalidOperationException("La cola esta vacia");
+            }
+            return elementos.ObtenerUltimo();
         }
     }
 }
