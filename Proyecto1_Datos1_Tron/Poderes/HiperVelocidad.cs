@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto1_Datos1_Tron
 {
-    public abstract class Poder
+    public class HiperVelocidad : Poder
     {
         public Brush ColorItem { get; set; }
 
@@ -17,29 +17,20 @@ namespace Proyecto1_Datos1_Tron
         private const int TamanoPoder = 20;
 
 
-        public Poder(Brush colorItem)
+        public HiperVelocidad(Brush colorItem) : base(colorItem)
         {
             this.ColorItem = colorItem;
             this.RectanguloPoder = new Rectangle(0, 0, TamanoPoder, TamanoPoder);
         }
 
-        public void ColocarPoderMapa(NodoMapa NodoSeleccionado)
+        public override Poder ClonarPoder()
         {
-            this.RectanguloPoder = new Rectangle(NodoSeleccionado.RectanguloMapa.X, NodoSeleccionado.RectanguloMapa.Y, TamanoPoder, TamanoPoder);
-        }
-        public abstract Poder ClonarPoder();
-
-
-        public void DibujarPoder(Graphics g)
-        {
-            g.FillRectangle(ColorItem, RectanguloPoder);
-
+            return new HiperVelocidad(this.ColorItem);
         }
 
-        public virtual void EfectoPoder(Jugador jugador)
+        public override void EfectoPoder(Jugador jugador)
         {
-            Console.WriteLine("Efecto Poder");
+            Console.WriteLine("Efecto Velocidad"); // jugador.ActivarEscudo();
         }
-
     }
 }

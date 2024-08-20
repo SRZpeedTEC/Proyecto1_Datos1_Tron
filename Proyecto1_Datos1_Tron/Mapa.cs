@@ -74,7 +74,7 @@ namespace Proyecto1_Datos1_Tron
         public NodoMapa ObtenerNodoDisponible()
         {
             Random random = new Random();
-            var NodosDisponibles = nodosMapa.Where(n => !n.ocupado).ToList();
+            var NodosDisponibles = nodosMapa.Where(n => !n.ocupadoItem && !n.ocupadoPoder && !n.ocupado).OrderBy(n => random.Next()).ToList();
 
             if (NodosDisponibles.Count > 0)
             {

@@ -146,9 +146,27 @@ namespace Proyecto1_Datos1_Tron
             return ListaSaltada;
            
         }
-      
 
-        
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= Contador)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                }
+
+                Nodos<T> actual = Cabeza;
+                for (int i = 0; i < index; i++)
+                {
+                    actual = actual.Siguiente;
+                }
+
+                return actual.Valor;
+            }
+        }
+
+
     }
 }
 

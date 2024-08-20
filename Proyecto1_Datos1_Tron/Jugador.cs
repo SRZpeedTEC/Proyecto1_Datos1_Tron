@@ -29,6 +29,8 @@ namespace Proyecto1_Datos1_Tron
         public Keys DownKey { get; set; }
         public Keys LeftKey { get; set; }
         public Keys RightKey { get; set; }
+        public Keys PowerKey { get; set; }
+        public Keys ChangeKey { get; set; }
 
         public bool vivo { get; set; }
         public Mapa mapaJuego { get; set; }
@@ -41,9 +43,9 @@ namespace Proyecto1_Datos1_Tron
 
 
         private const int TamañoCuadrado = 20; // Tamaño del cuadrado de colisión
-        
 
-        public Jugador(Mapa mapaJuego, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey)
+
+        public Jugador(Mapa mapaJuego, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey, Keys PowerKey, Keys ChangeKey)
         {
             Random rnd = new Random();
             Velocidad = rnd.Next(1, 11);
@@ -53,9 +55,9 @@ namespace Proyecto1_Datos1_Tron
 
             Estela = new ListaEnlazada<Rectangle>();
             Estela.AgregarPrimero(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));
-            for(int x = 0; x < TamanoEstela; x++)
+            for (int x = 0; x < TamanoEstela; x++)
             {
-                Estela.AgregarUltimo(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));    
+                Estela.AgregarUltimo(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));
             }
 
 
@@ -75,14 +77,16 @@ namespace Proyecto1_Datos1_Tron
             this.DownKey = DownKey;
             this.RightKey = RightKey;
             this.LeftKey = LeftKey;
-            
+            this.PowerKey = PowerKey;
+            this.ChangeKey = ChangeKey;
+
         }
 
         public void Mover()
         {
             Rectangle cabezaActual = Estela.ObtenerPrimero();
             Rectangle nuevaPosicion = cabezaActual;
-            if(vivo != false)
+            if (vivo != false)
             {
                 switch (DireccionActual)
                 {
@@ -112,7 +116,17 @@ namespace Proyecto1_Datos1_Tron
                     Items.AgregarCola(itemRecogido);
                     FormGame form = (FormGame)Application.OpenForms["FormGame"];
                     form.itemsLista.Remove(itemRecogido);
-
+                }
+                else if (nodoDestino != null && nodoDestino.ocupadoPoder == true)
+                {
+                    Console.WriteLine("Poder Recogido");
+                    Poder poderRecogido = nodoDestino.poder;
+                    // poderRecogido.EfectoPoder(this);
+                    nodoDestino.ocupadoPoder = false;
+                    nodoDestino.poder = null;
+                    Poderes.MeterPila(poderRecogido);
+                    FormGame form = (FormGame)Application.OpenForms["FormGame"];
+                    form.poderesLista.Remove(poderRecogido);
                 }
 
                 else if (nodoDestino != null && nodoDestino.ocupado != true)
@@ -140,15 +154,36 @@ namespace Proyecto1_Datos1_Tron
                     vivo = false;
                     DestruccionMoto();
                 }
-                
+              
+            }
+        }
 
+        public void AlternarPoder()
+        {
+            if (!Poderes.VacioPila() && Poderes.ContadorPila() > 1)
+            {
+                Poder poderActual = Poderes.Eliminar();
+                Poderes.MeterPilaFinal(poderActual);
+            }
+        }
+        public void AplicarPoder()
+        {
+            if (!Poderes.VacioPila())
+            {
+                Poder poderActual = Poderes.Eliminar();
+                poderActual.EfectoPoder(this);
+            }
+        } 
 
-                /* else if (nodoDestino != null && nodoDestino.ocupadoPoder == true)
-                {
-                    Poder poder = nodoDestino.Poder;
-                    poder.EfectoPoder(this);
-                    nodoDestino.ocupadoPoder = false;
-                } */
+        public virtual void TeclasPoderes(Keys key)
+        {
+            if (key == PowerKey)
+            {
+                AplicarPoder();
+            }
+            else if (key == ChangeKey)
+            {
+                AlternarPoder();
             }
         }
 
@@ -253,7 +288,8 @@ namespace Proyecto1_Datos1_Tron
                     sonidoCambioDireccion.Play();
                     DireccionActual = "Izquierda";
                     DireccionProhibida = "Derecha";
-                }
+                }              
+
             }
             
 

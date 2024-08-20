@@ -70,6 +70,8 @@
     <Compile Include="NodoMapa.cs" />
     <Compile Include="EstructurasDeDatos\Nodos.cs" />
     <Compile Include="Poder.cs" />
+    <Compile Include="Poderes\Escudo.cs" />
+    <Compile Include="Poderes\HiperVelocidad.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

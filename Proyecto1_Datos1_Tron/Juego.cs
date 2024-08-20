@@ -12,17 +12,34 @@ namespace Proyecto1_Datos1_Tron
 {
     public partial class FormGame : Form
     {
-        
+        //MAPA Y JUGADORES
+
         private Mapa mapa;
         private List<Jugador> jugadores;
+
+        // TIMERS
+
         private Timer movimientoTimer;
         private Timer itemSpawnTimer;
         
+        // SONIDOS
+
         public SoundPlayer sonidoCambioDireccion = new SoundPlayer(@"Resources\AudioMotos.wav");
+
+        // ITEMS Y PODERES
+
         public List<Item> PosiblesItems = new List<Item>();
         public List<Item> itemsLista = new List<Item>();
+
+        public List<Poder> PosiblesPoderes = new List<Poder>();
+        public List<Poder> poderesLista = new List<Poder>();
+
+        // BOMBAS
+
         public List<List<NodoMapa>> nodosExplosion = new List<List<NodoMapa>>(); // Nodos afectados por la explosión
         private Brush colorExplosion;
+
+        private Random randomGenerator;
 
 
         public FormGame()
@@ -35,10 +52,11 @@ namespace Proyecto1_Datos1_Tron
 
             mapa = new Mapa(58, 34, 20); // Tamaño del mapa con nodos de 20x20 píxeles
             jugadores = new List<Jugador>();
+            randomGenerator = new Random();
 
             // Crear jugadores en el mapa
-            Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Red, Keys.W, Keys.S, Keys.D, Keys.A);
-            // Jugador jugador2 = new Jugador(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Blue, Keys.Up, Keys.Down, Keys.Right, Keys.Left);
+            Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Red, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
+            // Jugador jugador2 = new Jugador(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Blue, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P);
 
             jugadores.Add(jugador1);
             // jugadores.Add(jugador2);
@@ -49,17 +67,25 @@ namespace Proyecto1_Datos1_Tron
 
             // ITEMS
             RecargaCombustible recargaCombustible = new RecargaCombustible(Brushes.Green);
+            RecargaCombustible RecargaCombustible2 = new RecargaCombustible(Brushes.Green);
             CrecimientoEstela  crecimientoEstela = new CrecimientoEstela(Brushes.Blue);
             Bomba bomba = new Bomba(Brushes.Red);
-            // PosiblesItems.Add(recargaCombustible);
-            // PosiblesItems.Add(crecimientoEstela);   
+            PosiblesItems.Add(recargaCombustible);
+            PosiblesItems.Add(crecimientoEstela);
             PosiblesItems.Add(bomba);
-            
+            PosiblesItems.Add(RecargaCombustible2);
+
+            // PODERES
+            Escudo escudo = new Escudo(Brushes.Yellow);
+            HiperVelocidad hiperVelocidad = new HiperVelocidad(Brushes.Purple);
+            PosiblesPoderes.Add(escudo);
+            PosiblesPoderes.Add(hiperVelocidad);
+
 
             // TIMER ITEMS Y PODERES
 
             itemSpawnTimer = new Timer();
-            itemSpawnTimer.Interval = 5000; // 5000 milisegundos = 5 segundos
+            itemSpawnTimer.Interval = 4000; // 5000 milisegundos = 5 segundos
             itemSpawnTimer.Tick += new EventHandler(OnItemSpawnTick);
             itemSpawnTimer.Start();
 
@@ -73,12 +99,11 @@ namespace Proyecto1_Datos1_Tron
             movimientoTimer.Start();
 
        
-            
-
+ 
 
         }
 
-        public void OnTimerTick(object sender, EventArgs e)
+        public void OnTimerTick(object sender, EventArgs e) // Método que se ejecuta cada vez que el timer llega a su intervalo
         {
             foreach (var jugador in jugadores)
             {
@@ -90,18 +115,18 @@ namespace Proyecto1_Datos1_Tron
             pictureBox1.Invalidate();
         }
 
-        public void OnKeyDown(object sender, KeyEventArgs e)
+        public void OnKeyDown(object sender, KeyEventArgs e) // Método que se ejecuta cada vez que se presiona una tecla
         {
             jugadores[0].CambiarDireccion(e.KeyCode);
+            jugadores[0].TeclasPoderes(e.KeyCode);
             // jugadores[1].CambiarDireccion(e.KeyCode);
-    
         }
  
         private void FormGame_Load(object sender, EventArgs e)
         {
 
         }
-        public void PictureBox1_Paint(object sender, PaintEventArgs e)
+        public void PictureBox1_Paint(object sender, PaintEventArgs e) // Método que se ejecuta cada vez que se redibuja el PictureBox
         {
             foreach (var nodo in mapa.nodosMapa)
             {
@@ -119,6 +144,11 @@ namespace Proyecto1_Datos1_Tron
                 item.DibujarItem(e.Graphics);
             }
 
+            foreach (var poder in poderesLista)
+            {
+                poder.DibujarPoder(e.Graphics);
+            }
+
             if (nodosExplosion != null && nodosExplosion.Count > 0)
             {
                 for (int i = 0; i < nodosExplosion.Count; i++)
@@ -132,7 +162,7 @@ namespace Proyecto1_Datos1_Tron
             
         }
 
-        public void ManejarExplosion(List<NodoMapa> nodosAfectados, Brush colorExplosion)
+        public void ManejarExplosion(List<NodoMapa> nodosAfectados, Brush colorExplosion) // Método que se encarga de manejar la explosión de la bomba
         {
             Task.Run(async () =>
             {
@@ -167,34 +197,49 @@ namespace Proyecto1_Datos1_Tron
 
 
 
-        private void OnItemSpawnTick(object sender, EventArgs e)
+        private void OnItemSpawnTick(object sender, EventArgs e) // Método que se ejecuta cada vez que el timer de spawn de items llega a su intervalo
         {
 
-            Random randomItem = new Random();
-            Item MoldeItem = PosiblesItems[randomItem.Next(PosiblesItems.Count)];
+            
+
+            Item MoldeItem = PosiblesItems[randomGenerator.Next(PosiblesItems.Count)];
             Item nuevoItem = MoldeItem.Clonar();
 
+            Poder MoldePoder = PosiblesPoderes[randomGenerator.Next(PosiblesPoderes.Count)];
+            Poder nuevoPoder = MoldePoder.ClonarPoder();
+
             // Obtener un nodo disponible aleatorio
-            NodoMapa nodoDisponible = mapa.ObtenerNodoDisponible();
-            if (nodoDisponible != null)
+            NodoMapa nodoDisponibleItem = mapa.ObtenerNodoDisponible();
+            if (nodoDisponibleItem != null)
             {
                 // Colocar el item en el nodo seleccionado
-                nuevoItem.ColocarItemMapa(nodoDisponible);
+                nuevoItem.ColocarItemMapa(nodoDisponibleItem);
 
                 // Marcar el nodo como ocupado
-                nodoDisponible.ocupadoItem = true;
-                nodoDisponible.item = nuevoItem;
+                nodoDisponibleItem.ocupadoItem = true;
+                nodoDisponibleItem.item = nuevoItem;
 
                 // Dibujar el item en el mapa
                 itemsLista.Add(nuevoItem);
 
                 pictureBox1.Invalidate();
-
             }
-            
+            NodoMapa nodoDisponiblePoder = mapa.ObtenerNodoDisponible();
+            if (nodoDisponiblePoder != null)
+            {
+                // Colocar el item en el nodo seleccionado
+                nuevoPoder.ColocarPoderMapa(nodoDisponiblePoder);
+
+                // Marcar el nodo como ocupado
+                nodoDisponiblePoder.ocupadoPoder = true;
+                nodoDisponiblePoder.poder = nuevoPoder;
+
+                // Dibujar el item en el mapa
+                poderesLista.Add(nuevoPoder);
+
+                pictureBox1.Invalidate();
+            }            
         }
-
-
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
@@ -211,6 +256,11 @@ namespace Proyecto1_Datos1_Tron
         }
 
         private void Items_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox15_Click(object sender, EventArgs e)
         {
 
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto1_Datos1_Tron
 {
-    public class Pila<T>
+    public class Pila<T> : IEnumerable<T>
     {
         public ListaEnlazada<T> elementos = new ListaEnlazada<T>();
 
@@ -15,9 +16,19 @@ namespace Proyecto1_Datos1_Tron
             return elementos.Contador == 0;
         }
 
-        public void Meter(T elemento)
+        public void MeterPila(T elemento)
         {
             elementos.AgregarPrimero(elemento);
+        }
+        
+        public void VaciarPila()
+        {
+            elementos = new ListaEnlazada<T>();
+        }
+
+        public void MeterPilaFinal(T elemento)
+        {
+            elementos.AgregarUltimo(elemento);
         }
 
         public T Eliminar()
@@ -39,5 +50,32 @@ namespace Proyecto1_Datos1_Tron
             }
             return elementos.ObtenerPrimero();
         }
+        public int ContadorPila()
+        {
+            return elementos.Contador;
+        }
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= ContadorPila())
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                }
+
+                return elementos[index]; // Asumiendo que ListaEnlazada<T> tiene un indexador
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return elementos.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
+
