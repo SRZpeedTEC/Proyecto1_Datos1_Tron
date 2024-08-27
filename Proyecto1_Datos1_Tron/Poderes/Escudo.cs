@@ -9,18 +9,10 @@ namespace Proyecto1_Datos1_Tron
 {
     public class Escudo : Poder
     {
-        public Brush ColorItem { get; set; }
-
-        public Image Sprite { get; set; }
-        public Rectangle RectanguloPoder { get; set; }
-
-        private const int TamanoPoder = 20;
-
-
         public Escudo(Brush colorItem) : base(colorItem)
         {
-            this.ColorItem = colorItem;
-            this.RectanguloPoder = new Rectangle(0, 0, TamanoPoder, TamanoPoder);
+            this.SpritePoder = Image.FromFile(@"Resources\EscudoMoto.png");
+            this.ColorItem = colorItem;           
         }
 
         public override Poder ClonarPoder()
@@ -30,7 +22,8 @@ namespace Proyecto1_Datos1_Tron
 
         public override void EfectoPoder(Jugador jugador)
         {
-            Console.WriteLine("Efecto Escudo"); // jugador.ActivarEscudo();
+            Console.WriteLine("Efecto Escudo"); 
+            jugador.ActivarEscudo();
         }
     }
 }

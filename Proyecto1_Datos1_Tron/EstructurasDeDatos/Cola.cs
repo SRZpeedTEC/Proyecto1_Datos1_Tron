@@ -11,16 +11,32 @@ namespace Proyecto1_Datos1_Tron
     {
         public ListaEnlazada<T> elementos = new ListaEnlazada<T>();
 
-        public bool VacioCola()
-        {
-            return elementos.Contador == 0;
-        }
+      
 
-        public void AgregarCola(T elemento)
+        public void Enqueue(T elemento)
         {
             elementos.AgregarUltimo(elemento);
         }
-        public T SacarCola()
+
+        public void Dequeue()
+        {
+            if (VacioCola())
+            {
+                throw new InvalidOperationException("La cola esta vacia");
+            }
+            elementos.RemoverPrimero();
+        }
+
+        public T Peek()
+        {
+            if (VacioCola())
+            {
+                throw new InvalidOperationException("La cola esta vacia");
+            }
+            return elementos.ObtenerPrimero();
+        }
+
+        public T PeekDequeue()
         {
             if (VacioCola())
             {
@@ -31,40 +47,16 @@ namespace Proyecto1_Datos1_Tron
             return valor;
         }
 
-        public void RemoverCola()
+        public bool VacioCola()
         {
-            if (VacioCola())
-            {
-                throw new InvalidOperationException("La cola esta vacia");
-            }
-            elementos.RemoverPrimero();
+            return elementos.Contador == 0;
         }
 
-        public T CimaCola()
-        {
-            if (VacioCola())
-            {
-                throw new InvalidOperationException("La cola esta vacia");
-            }
-            return elementos.ObtenerPrimero();
-        }
-        public T FondoCola()
-        {
-            if (VacioCola())
-            {
-                throw new InvalidOperationException("La cola esta vacia");
-            }
-            return elementos.ObtenerUltimo();
-        }
-        public int ContadorCola()
-        {
-            return elementos.Contador;
-        }
         public T this[int index]
         {
             get
             {
-                if (index < 0 || index >= ContadorCola())
+                if (index < 0 || index >= elementos.Contador)
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }

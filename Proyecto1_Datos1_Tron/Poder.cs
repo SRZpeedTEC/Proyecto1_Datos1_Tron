@@ -11,7 +11,7 @@ namespace Proyecto1_Datos1_Tron
     {
         public Brush ColorItem { get; set; }
 
-        public Image Sprite { get; set; }
+        public Image SpritePoder { get; set; }
         public Rectangle RectanguloPoder { get; set; }
 
         private const int TamanoPoder = 20;
@@ -32,8 +32,7 @@ namespace Proyecto1_Datos1_Tron
 
         public void DibujarPoder(Graphics g)
         {
-            g.FillRectangle(ColorItem, RectanguloPoder);
-
+            g.DrawImage(SpritePoder, RectanguloPoder);
         }
 
         public virtual void EfectoPoder(Jugador jugador)

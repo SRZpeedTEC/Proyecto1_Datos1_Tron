@@ -9,11 +9,13 @@ using System.Windows.Forms;
 namespace Proyecto1_Datos1_Tron
 {
     public class Bomba : Item
-    {
-        
+    {        
         public Bomba(Brush colorItem) : base(colorItem)
 
         {
+            this.Sprite = Image.FromFile(@"Resources\bomba.png");         
+            this.ColorItem = colorItem;
+          
         }
 
         public override void EfectoItem(Jugador jugador)
@@ -25,7 +27,9 @@ namespace Proyecto1_Datos1_Tron
                 await Task.Delay(3000);
                 Explosion(jugador, CentroExplosion);
             });
+            
         }
+
         private void Explosion(Jugador jugador, NodoMapa CentroExplosion)
         {
             int rangoExplosion = 2;
@@ -49,6 +53,17 @@ namespace Proyecto1_Datos1_Tron
 
             FormGame form = (FormGame)Application.OpenForms["FormGame"];
             form.ManejarExplosion(NodosExplosion, jugador.colorEstela);
+        }
+
+        public void DibujarBombaExlotando(Graphics g)
+        {
+            Console.WriteLine("PUMMM");
+            g.DrawImage(Sprite, RectanguloItem);
+            Task.Run(async () =>
+            {
+                await Task.Delay(3000);
+                return;
+            });          
         }
 
         public override Item Clonar()

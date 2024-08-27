@@ -16,11 +16,40 @@ namespace Proyecto1_Datos1_Tron
             return elementos.Contador == 0;
         }
 
-        public void MeterPila(T elemento)
+        public void Push(T elemento)
         {
             elementos.AgregarPrimero(elemento);
         }
-        
+            
+        public void Pop() {
+            if (VacioPila())
+            {
+                throw new InvalidOperationException("La pila está vacía");
+            }
+            elementos.RemoverPrimero();
+        }
+
+        public T Peek()
+        {
+            if (VacioPila())
+            {
+                throw new InvalidOperationException("La pila está vacía");
+            }
+            return elementos.ObtenerPrimero();
+        }
+
+        public T PopPeek()
+        {
+            if (VacioPila())
+            {
+                throw new InvalidOperationException("La pila está vacía");
+            }
+            T valor = elementos.ObtenerPrimero();
+            elementos.RemoverPrimero();
+            return valor;
+        }
+      
+
         public void VaciarPila()
         {
             elementos = new ListaEnlazada<T>();
@@ -31,41 +60,22 @@ namespace Proyecto1_Datos1_Tron
             elementos.AgregarUltimo(elemento);
         }
 
-        public T Eliminar()
-        {
-            if (VacioPila())
-            {
-                throw new InvalidOperationException("La pila está vacía");
-            }
-            T valor = elementos.ObtenerPrimero();
-            elementos.RemoverPrimero();
-            return valor;
-        }
 
-        public T CimaPila()
-        {
-            if (VacioPila())
-            {
-                throw new InvalidOperationException("La pila está vacía");
-            }
-            return elementos.ObtenerPrimero();
-        }
-        public int ContadorPila()
-        {
-            return elementos.Contador;
-        }
+
+
+
         public T this[int index]
         {
             get
             {
-                if (index < 0 || index >= ContadorPila())
+                if (index < 0 || index >= elementos.Contador)
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
 
-                return elementos[index]; // Asumiendo que ListaEnlazada<T> tiene un indexador
+                return elementos[index]; 
             }
-        }
+        }      
 
         public IEnumerator<T> GetEnumerator()
         {

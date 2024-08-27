@@ -15,6 +15,7 @@ namespace Proyecto1_Datos1_Tron
         {
             Random rnd = new Random();
             this.ColorItem = colorItem;
+            this.Sprite = Image.FromFile(@"Resources\CombustibleJuego.png");
             this.CantidadCombustible = rnd.Next(1, 100);
         }
 

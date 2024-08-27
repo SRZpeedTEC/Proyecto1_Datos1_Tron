@@ -21,24 +21,10 @@ namespace Proyecto1_Datos1_Tron
             this.Contador = 0;
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            Nodos<T> actual = Cabeza;
-            while (actual != null)
-            {
-                yield return actual.Valor;
-                actual = actual.Siguiente;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
         public void AgregarPrimero(T valor)
         {
 
-        // Agrega un nodo al principio de la lista
+            // Agrega un nodo al principio de la lista
             Nodos<T> nuevoNodo = new Nodos<T>(valor);
             if (Cabeza == null)
             {
@@ -127,6 +113,7 @@ namespace Proyecto1_Datos1_Tron
         {
             return nodo?.Siguiente;
         }
+
         public ListaEnlazada<T> Salto(int posicion)
         {
             ListaEnlazada<T> ListaSaltada = new ListaEnlazada<T>();
@@ -147,6 +134,15 @@ namespace Proyecto1_Datos1_Tron
            
         }
 
+        public void EliminarElementos()
+        {
+            Cabeza = null;
+            Cola = null;
+            Contador = 0;
+        }
+
+
+
         public T this[int index]
         {
             get
@@ -165,6 +161,23 @@ namespace Proyecto1_Datos1_Tron
                 return actual.Valor;
             }
         }
+        
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            Nodos<T> actual = Cabeza;
+            while (actual != null)
+            {
+                yield return actual.Valor;
+                actual = actual.Siguiente;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        
 
 
     }

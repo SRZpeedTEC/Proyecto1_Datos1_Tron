@@ -82,6 +82,65 @@ namespace Proyecto1_Datos1_Tron.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bomba {
+            get {
+                object obj = ResourceManager.GetObject("bomba", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap bombaExplotando {
+            get {
+                object obj = ResourceManager.GetObject("bombaExplotando", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream CancionPrincipal {
+            get {
+                return ResourceManager.GetStream("CancionPrincipal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CombustibleJuego {
+            get {
+                object obj = ResourceManager.GetObject("CombustibleJuego", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EscudoMoto {
+            get {
+                object obj = ResourceManager.GetObject("EscudoMoto", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EstelaCrecimiento {
+            get {
+                object obj = ResourceManager.GetObject("EstelaCrecimiento", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Music {
             get {
                 object obj = ResourceManager.GetObject("Music", resourceCulture);
@@ -112,6 +171,15 @@ namespace Proyecto1_Datos1_Tron.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream RecoleccionObjeto {
+            get {
+                return ResourceManager.GetStream("RecoleccionObjeto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream SonidoColision {
             get {
                 return ResourceManager.GetStream("SonidoColision", resourceCulture);
@@ -124,6 +192,16 @@ namespace Proyecto1_Datos1_Tron.Properties {
         internal static System.Drawing.Bitmap TronGame {
             get {
                 object obj = ResourceManager.GetObject("TronGame", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap VelocidadPoder {
+            get {
+                object obj = ResourceManager.GetObject("VelocidadPoder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

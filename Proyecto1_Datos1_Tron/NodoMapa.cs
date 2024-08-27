@@ -17,6 +17,7 @@ namespace Proyecto1_Datos1_Tron
         public bool ocupado { get; set; }
         public bool ocupadoItem { get; set; }
         public bool ocupadoPoder { get; set; }
+        
         public Item item { get; set; }
         public Poder poder { get; set; }
 

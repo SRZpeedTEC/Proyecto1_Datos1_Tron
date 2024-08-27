@@ -8,18 +8,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Media;
+using NAudio.Wave;
+
 namespace Proyecto1_Datos1_Tron
 {
     public partial class FormGame : Form
     {
         //MAPA Y JUGADORES
 
-        private Mapa mapa;
-        private List<Jugador> jugadores;
+        public Mapa mapa;
+        public List<Jugador> jugadores;
+        public List<Tuple<Jugador, Jugador>> colisionesPendientes = new List<Tuple<Jugador, Jugador>>();
+
 
         // TIMERS
 
-        private Timer movimientoTimer;
+        private Timer actualizacionTimer;
         private Timer itemSpawnTimer;
         
         // SONIDOS
@@ -37,9 +41,13 @@ namespace Proyecto1_Datos1_Tron
         // BOMBAS
 
         public List<List<NodoMapa>> nodosExplosion = new List<List<NodoMapa>>(); // Nodos afectados por la explosión
+        public List<Bomba> bombasActivadas = new List<Bomba>(); // Bombas activadas en el mapa
         private Brush colorExplosion;
-
         private Random randomGenerator;
+
+        // AUDIO
+
+        public AdministradorSonido Musica = new AdministradorSonido();
 
 
         public FormGame()
@@ -49,17 +57,27 @@ namespace Proyecto1_Datos1_Tron
 
             // MAPA Y JUGADOR
 
-
+            
             mapa = new Mapa(58, 34, 20); // Tamaño del mapa con nodos de 20x20 píxeles
             jugadores = new List<Jugador>();
             randomGenerator = new Random();
+            Musica.ReproducirSonido(@"Resources\CancionPrincipal.wav");
 
             // Crear jugadores en el mapa
-            Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Red, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
-            // Jugador jugador2 = new Jugador(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Blue, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P);
+            Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
+            // Jugador jugador2 = new Jugador(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Blue, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P, Keys.O);
+            Bot bot1 = new Bot(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Red);    // Posición personalizada
+            Bot bot2 = new Bot(mapa, 57 * 20, 33 * 20, "Izquierda", "Derecha", Brushes.Orange); // Posición personalizada
+            Bot bot3 = new Bot(mapa, 40 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Yellow); // Posición personalizada
+            Bot bot4 = new Bot(mapa, 0 * 20, 0 * 20, "Derecha", "Izquierda", Brushes.Green);    // Esquina superior izquierda         
+
 
             jugadores.Add(jugador1);
             // jugadores.Add(jugador2);
+            jugadores.Add(bot1);
+            jugadores.Add(bot2);
+            jugadores.Add(bot3);
+            jugadores.Add(bot4);
 
             this.KeyDown += new KeyEventHandler(OnKeyDown);
             pictureBox1.Paint += new PaintEventHandler(PictureBox1_Paint);
@@ -68,12 +86,14 @@ namespace Proyecto1_Datos1_Tron
             // ITEMS
             RecargaCombustible recargaCombustible = new RecargaCombustible(Brushes.Green);
             RecargaCombustible RecargaCombustible2 = new RecargaCombustible(Brushes.Green);
+            RecargaCombustible RecargaCombustible3 = new RecargaCombustible(Brushes.Green);
             CrecimientoEstela  crecimientoEstela = new CrecimientoEstela(Brushes.Blue);
             Bomba bomba = new Bomba(Brushes.Red);
             PosiblesItems.Add(recargaCombustible);
             PosiblesItems.Add(crecimientoEstela);
             PosiblesItems.Add(bomba);
             PosiblesItems.Add(RecargaCombustible2);
+            PosiblesItems.Add(RecargaCombustible3);
 
             // PODERES
             Escudo escudo = new Escudo(Brushes.Yellow);
@@ -85,41 +105,39 @@ namespace Proyecto1_Datos1_Tron
             // TIMER ITEMS Y PODERES
 
             itemSpawnTimer = new Timer();
-            itemSpawnTimer.Interval = 4000; // 5000 milisegundos = 5 segundos
+            itemSpawnTimer.Interval = 2000; // 5000 milisegundos = 5 segundos
             itemSpawnTimer.Tick += new EventHandler(OnItemSpawnTick);
             itemSpawnTimer.Start();
 
 
             // TIMER JUEGO
 
-            movimientoTimer = new Timer();
-            movimientoTimer.Interval = 50; // Ajusta este valor según la velocidad deseada
-            movimientoTimer.Tick += new EventHandler(OnTimerTick);
+            actualizacionTimer = new Timer();
+            actualizacionTimer.Interval = 50; // Ajusta este valor según la velocidad deseada
+            actualizacionTimer.Tick += new EventHandler(OnTimerTick);
             sonidoCambioDireccion.Play();
-            movimientoTimer.Start();
-
-       
- 
+            actualizacionTimer.Start();
 
         }
 
         public void OnTimerTick(object sender, EventArgs e) // Método que se ejecuta cada vez que el timer llega a su intervalo
         {
-            foreach (var jugador in jugadores)
-            {
-                jugador.Mover(); // El movimiento se maneja internamente
-                jugador.GastoCombustible(); // El gasto de combustible se maneja internamente
-                jugador.ActualizarCombustible(lblCombustible, progressBarCombustible); // Actualiza el combustible del jugador
-            }
+            
+            VerificarColisionesPendientes();
+            MostrarPoderes();
+            BotarObjetos();
+            ActualizarListaJugadores();
 
             pictureBox1.Invalidate();
         }
 
         public void OnKeyDown(object sender, KeyEventArgs e) // Método que se ejecuta cada vez que se presiona una tecla
         {
-            jugadores[0].CambiarDireccion(e.KeyCode);
-            jugadores[0].TeclasPoderes(e.KeyCode);
-            // jugadores[1].CambiarDireccion(e.KeyCode);
+            foreach (var jugador in jugadores)
+            {
+                jugador.CambiarDireccion(e.KeyCode);
+                jugador.TeclasPoderes(e.KeyCode);
+            }
         }
  
         private void FormGame_Load(object sender, EventArgs e)
@@ -139,14 +157,28 @@ namespace Proyecto1_Datos1_Tron
                 jugador.Dibujar(e.Graphics);
 
             }
-            foreach (var item in itemsLista)
+
+            var itemsListaCopy = new List<Item>(itemsLista);
+            foreach (var item in itemsListaCopy)
             {
                 item.DibujarItem(e.Graphics);
             }
 
-            foreach (var poder in poderesLista)
+            var poderesListaCopy = new List<Poder>(poderesLista);
+            foreach (var poder in poderesListaCopy)
             {
                 poder.DibujarPoder(e.Graphics);
+            }
+
+            foreach (var bomba in bombasActivadas)
+            {
+                bomba.Sprite = Image.FromFile(@"Resources\bombaExplotando.png");
+                bomba.DibujarBombaExlotando(e.Graphics);
+                Task.Run(async () =>
+                {
+                    await Task.Delay(3000);
+                    bombasActivadas.Remove(bomba);
+                });
             }
 
             if (nodosExplosion != null && nodosExplosion.Count > 0)
@@ -161,6 +193,47 @@ namespace Proyecto1_Datos1_Tron
             }
             
         }
+        public void VerificarColisionesPendientes()
+        {
+            var colisionesPendientesCopia = new List<Tuple<Jugador, Jugador>>(colisionesPendientes);
+
+            foreach (var colision in colisionesPendientesCopia)
+            {
+                var jugador1 = colision.Item1;
+                var jugador2 = colision.Item2;
+
+                if (jugador1.escudoActivo)
+                {
+                    jugador2.vivo = false;
+                    jugador2.DestruccionMoto();
+                    Console.WriteLine("ColisionDada");
+                }
+                else if (jugador2.escudoActivo)
+                {
+                    jugador1.vivo = false;
+                    jugador1.DestruccionMoto();
+                    Console.WriteLine("ColisionDada");
+                }
+                else
+                {
+                    jugador1.vivo = false;
+                    jugador2.vivo = false;
+                    jugador1.DestruccionMoto();
+                    jugador2.DestruccionMoto();
+                    Console.WriteLine("ColisionDada");
+                }    
+                
+            }
+
+            colisionesPendientes.Clear();
+        }
+
+        public void ActualizarListaJugadores()
+        {
+            jugadores = jugadores.Where(j => j.vivo).ToList();
+        }
+
+
 
         public void ManejarExplosion(List<NodoMapa> nodosAfectados, Brush colorExplosion) // Método que se encarga de manejar la explosión de la bomba
         {
@@ -193,10 +266,6 @@ namespace Proyecto1_Datos1_Tron
             });
         }
 
-
-
-
-
         private void OnItemSpawnTick(object sender, EventArgs e) // Método que se ejecuta cada vez que el timer de spawn de items llega a su intervalo
         {
 
@@ -222,7 +291,6 @@ namespace Proyecto1_Datos1_Tron
                 // Dibujar el item en el mapa
                 itemsLista.Add(nuevoItem);
 
-                pictureBox1.Invalidate();
             }
             NodoMapa nodoDisponiblePoder = mapa.ObtenerNodoDisponible();
             if (nodoDisponiblePoder != null)
@@ -237,10 +305,56 @@ namespace Proyecto1_Datos1_Tron
                 // Dibujar el item en el mapa
                 poderesLista.Add(nuevoPoder);
 
-                pictureBox1.Invalidate();
-            }            
+            }                         
         }
-        private void pictureBox1_Click(object sender, EventArgs e)
+        public void MostrarPoderes()
+        {
+            PictureBox[] SpritePoderes = { PoderPrimero, PoderSegundo, PoderTercero };
+
+            foreach (var pictureBox in SpritePoderes)
+            {
+                pictureBox.Image = null;
+            }
+
+            int i = 0;
+            foreach (var poder in jugadores[0].Poderes)
+            {
+                if (poder != null)
+                {
+                    if (i >= SpritePoderes.Length) break;
+                    SpritePoderes[i].Image = poder.SpritePoder;
+                    i++;
+                }
+
+            }
+                
+        }
+
+        public void BotarObjetos()
+        {
+            foreach (var jugador in jugadores)
+            {
+                if (!jugador.vivo)
+                {
+                    Pila<Poder> PoderesPostMorten = jugador.Poderes;
+                    foreach (var Poder in PoderesPostMorten)
+                    {
+                        NodoMapa nodoDisponiblePoderPostMorten = mapa.ObtenerNodoDisponible();
+                        Poder.ColocarPoderMapa(nodoDisponiblePoderPostMorten);
+
+                        nodoDisponiblePoderPostMorten.ocupadoPoder = true;
+                        nodoDisponiblePoderPostMorten.poder = Poder;
+
+                        poderesLista.Add(Poder);
+                    }
+                    PoderesPostMorten.elementos.EliminarElementos();
+                    jugador.Poderes.elementos.EliminarElementos();
+                }
+            }
+
+        }
+
+            private void pictureBox1_Click(object sender, EventArgs e)
         {
 
         }

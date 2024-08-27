@@ -2,23 +2,33 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using System.Threading;
 using System.Media;
+using System.Collections.Generic;
+
+using FormTimer = System.Windows.Forms.Timer;
+using ThreadTimer = System.Threading.Timer;
 
 namespace Proyecto1_Datos1_Tron
 {
     public class Jugador
     {
+        // ATRIBUTOS JUGADOR
         public int Velocidad { get; set; }
         public int CombustibleTanque { get; set; }
         public int Combustible { get; set; }
         public int Kilometraje = 0;
         public ListaEnlazada<Rectangle> Estela { get; set; }
         public int TamanoEstela = 3; // Tamaño de la estela
+        public ThreadTimer movimientoTimer;
+
+        // AUXILIARES
         public Cola<Item> Items { get; set; }
         public Pila<Poder> Poderes { get; set; }
         public string DireccionActual { get; set; }
         public string DireccionProhibida { get; set; }
+        public Rectangle nuevaPosicion { get; set; }
         public Image MotoSpriteUP { get; set; }
         public Image MotoSpriteDOWN { get; set; }
         public Image MotoSpriteLEFT { get; set; }
@@ -32,26 +42,29 @@ namespace Proyecto1_Datos1_Tron
         public Keys PowerKey { get; set; }
         public Keys ChangeKey { get; set; }
 
+
         public bool vivo { get; set; }
         public Mapa mapaJuego { get; set; }
 
-        public SoundPlayer sonidoCambioDireccion = new SoundPlayer(@"Resources\AudioMotos.wav");
-        public SoundPlayer sonidoColision = new SoundPlayer(@"Resources\SonidoColision.wav");
+        public SoundPlayer sonidoCambioDireccion = new SoundPlayer(@"Resources\AudioMotos.wav");       
+        public AdministradorSonido SonidosJuego = new AdministradorSonido();
 
+        public const int TamañoCuadrado = 20; // Tamaño del cuadrado de colisión
 
+        // PODERES
 
-
-
-        private const int TamañoCuadrado = 20; // Tamaño del cuadrado de colisión
-
+        public bool escudoActivo = false;
+        public bool hiperVelocidadActiva = false;   
+        public bool poderAplicado = false;
 
         public Jugador(Mapa mapaJuego, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey, Keys PowerKey, Keys ChangeKey)
         {
             Random rnd = new Random();
-            Velocidad = rnd.Next(1, 11);
+            Velocidad = 55;
             CombustibleTanque = 100;
             Combustible = CombustibleTanque;
             vivo = true;
+            movimientoTimer = new ThreadTimer(TickHandler, null, 100, Velocidad);
 
             Estela = new ListaEnlazada<Rectangle>();
             Estela.AgregarPrimero(new Rectangle(posicionInicialX, posicionInicialY, TamañoCuadrado, TamañoCuadrado));
@@ -81,9 +94,13 @@ namespace Proyecto1_Datos1_Tron
             this.ChangeKey = ChangeKey;
 
         }
-
-        public void Mover()
+       
+        public void TickHandler(object sender)      // Funcion que se ejecuta cada vez que el timer del jugador hace tick, maneja logica primaria
         {
+            FuncionesPorTick();
+        }
+        public virtual void  Mover()
+        {   
             Rectangle cabezaActual = Estela.ObtenerPrimero();
             Rectangle nuevaPosicion = cabezaActual;
             if (vivo != false)
@@ -102,30 +119,48 @@ namespace Proyecto1_Datos1_Tron
                     case "Derecha":
                         nuevaPosicion = new Rectangle(cabezaActual.X + TamañoCuadrado, cabezaActual.Y, TamañoCuadrado, TamañoCuadrado);
                         break;
-                }
+                }             
 
                 NodoMapa nodoDestino = mapaJuego.ObtenerNodo(nuevaPosicion);
+                FormGame form = (FormGame)Application.OpenForms["FormGame"];
+                List<Jugador> otrosJugadores = form.jugadores;
+
+                foreach (var otroJugador in otrosJugadores)
+                {
+                    if (otroJugador != this && otroJugador.Estela.ObtenerPrimero().IntersectsWith(nuevaPosicion) && this.vivo && otroJugador.vivo)
+                    {
+                        // Añadir a la lista de colisiones pendientes                      
+                        form.colisionesPendientes.Add(new Tuple<Jugador, Jugador>(this, otroJugador));
+                        return; // Salir sin hacer más movimientos
+                    }
+                }
+
 
                 if (nodoDestino != null && nodoDestino.ocupadoItem == true)
                 {
                     Console.WriteLine("Item Recogido");
+                    SonidosJuego.ReproducirSonido(@"Resources\RecoleccionObjeto.wav");
                     Item itemRecogido = nodoDestino.item;
                     itemRecogido.EfectoItem(this);
                     nodoDestino.ocupadoItem = false;
                     nodoDestino.item = null;
-                    Items.AgregarCola(itemRecogido);
-                    FormGame form = (FormGame)Application.OpenForms["FormGame"];
+                    Items.Enqueue(itemRecogido);
+                    if (itemRecogido is Bomba)
+                    {
+                        form.bombasActivadas.Add((Bomba)itemRecogido);
+                        Console.WriteLine("Bomba Recogida");
+                    }
+                                      
                     form.itemsLista.Remove(itemRecogido);
                 }
                 else if (nodoDestino != null && nodoDestino.ocupadoPoder == true)
                 {
                     Console.WriteLine("Poder Recogido");
-                    Poder poderRecogido = nodoDestino.poder;
-                    // poderRecogido.EfectoPoder(this);
+                    SonidosJuego.ReproducirSonido(@"Resources\RecoleccionObjeto.wav");
+                    Poder poderRecogido = nodoDestino.poder;                   
                     nodoDestino.ocupadoPoder = false;
                     nodoDestino.poder = null;
-                    Poderes.MeterPila(poderRecogido);
-                    FormGame form = (FormGame)Application.OpenForms["FormGame"];
+                    Poderes.Push(poderRecogido);
                     form.poderesLista.Remove(poderRecogido);
                 }
 
@@ -148,7 +183,7 @@ namespace Proyecto1_Datos1_Tron
                     Estela.RemoverUltimo();
                     Kilometraje++;
                 }
-                else if (nodoDestino == null || nodoDestino.ocupado == true)
+                else if ((nodoDestino == null || nodoDestino.ocupado == true) && !escudoActivo)
                 {
                     Console.WriteLine("Colision");
                     vivo = false;
@@ -158,29 +193,94 @@ namespace Proyecto1_Datos1_Tron
             }
         }
 
+       
         public void AlternarPoder()
         {
-            if (!Poderes.VacioPila() && Poderes.ContadorPila() > 1)
+            Console.WriteLine("Alternar Poderes");
+            if (!Poderes.VacioPila() && Poderes.elementos.Contador > 1)
             {
-                Poder poderActual = Poderes.Eliminar();
+                Poder poderActual = Poderes.PopPeek();
                 Poderes.MeterPilaFinal(poderActual);
             }
         }
-        public void AplicarPoder()
+        public virtual void AplicarPoder()
         {
             if (!Poderes.VacioPila())
             {
-                Poder poderActual = Poderes.Eliminar();
+                poderAplicado = true;
+                Poder poderActual = Poderes.PopPeek();
                 poderActual.EfectoPoder(this);
+                
             }
         } 
+        public void ActivarEscudo()
+        {   
+            
+            escudoActivo = true;
+            Task.Delay(5000).ContinueWith(t =>
+            {
+                escudoActivo = false;
+                poderAplicado = false;
+            });
+            
+        }
+
+        public void ActivarHiperVelocidad()
+        {
+            if (!hiperVelocidadActiva)
+            {
+                hiperVelocidadActiva = true;
+                Velocidad = 25;
+                ReiniciarTimer();
+
+                Task.Delay(5000).ContinueWith(t =>
+                {
+                    hiperVelocidadActiva = false;
+                    poderAplicado = false;
+                    Velocidad = 55;
+                    ReiniciarTimer();
+
+                });
+            }
+        }
+
+        private void ReiniciarTimer()
+        {
+            movimientoTimer.Change(0, Velocidad);
+        }
 
         public virtual void TeclasPoderes(Keys key)
         {
             if (key == PowerKey)
             {
-                AplicarPoder();
+                if (!poderAplicado)
+                {
+                    AplicarPoder();
+                }
+                else if (poderAplicado)
+                {
+
+                    if (escudoActivo && Poderes.Peek() is Escudo)
+                    {
+                        return;
+                    }
+
+                    else if (hiperVelocidadActiva && Poderes.Peek() is HiperVelocidad)
+                    {
+                        return;
+                    }
+                    else if (hiperVelocidadActiva && Poderes.Peek() is Escudo)
+                    {
+                        AplicarPoder();
+                    }
+                    else if (escudoActivo && Poderes.Peek() is HiperVelocidad)
+                    {
+                        AplicarPoder();
+                    }
+                }
             }
+                
+            
             else if (key == ChangeKey)
             {
                 AlternarPoder();
@@ -201,22 +301,36 @@ namespace Proyecto1_Datos1_Tron
 
         public void GastoCombustible()
         {
-            if (Kilometraje == 5)
+            if (vivo != false)
             {
-                Combustible--;
-                Kilometraje = 0;
-            }
-            else if (Combustible == 0)
-            {
-                vivo = false;
-                DestruccionMoto();
-            }
+                if (Kilometraje == 5)
+                {
+                    Combustible--;
+                    Kilometraje = 0;
+                }
+                else if (Combustible == 0)
+                {
+                    vivo = false;
+                    DestruccionMoto();
+                }
+            }          
         }
         
         public void ActualizarCombustible(Label lblCombustible, ProgressBar progressBarCombustible)
         {
-            lblCombustible.Text = $"Combustible: {Combustible} / {CombustibleTanque}";
-            progressBarCombustible.Value = Combustible;
+            if (lblCombustible.InvokeRequired)
+            {
+                lblCombustible.Invoke(new Action(() =>
+                {
+                    lblCombustible.Text = $"Combustible: {Combustible} / {CombustibleTanque}";
+                    progressBarCombustible.Value = Combustible;
+                }));
+            }
+            else
+            {
+                lblCombustible.Text = $"Combustible: {Combustible} / {CombustibleTanque}";
+                progressBarCombustible.Value = Combustible;
+            }
         }
 
         public void Dibujar(Graphics g)
@@ -240,8 +354,13 @@ namespace Proyecto1_Datos1_Tron
                     cabeza.Y + (cabeza.Height - cabezaHeight) / 2,
                     cabezaWidth,
                     cabezaHeight
-
                 );
+
+                if (escudoActivo)
+                {
+                    g.FillRectangle(Brushes.Gray, cabeza);
+                }
+
 
                 // Dibujar la cabeza de la moto
                 switch (DireccionActual)
@@ -295,6 +414,19 @@ namespace Proyecto1_Datos1_Tron
 
         }
 
+        public virtual void FuncionesPorTick()
+        {
+
+            FormGame form = (FormGame)Application.OpenForms["FormGame"];
+            Label lblCombustible = (Label)form.Controls["lblCombustible"];
+            ProgressBar progressBarCombustible = (ProgressBar)form.Controls["progressBarCombustible"];
+
+            Mover();
+            GastoCombustible();
+            ActualizarCombustible(lblCombustible, progressBarCombustible);
+            
+        }
+       
         public void DestruccionMoto()
         {
             if (vivo == false)
@@ -305,12 +437,14 @@ namespace Proyecto1_Datos1_Tron
                     NodoMapa nodoSegmento = mapaJuego.ObtenerNodo(segmento);
                     nodoSegmento.ocupado = false;
                     Estela.RemoverPrimero();
-                    sonidoCambioDireccion.Stop();
-                    sonidoColision.Play();
-                    
+                    sonidoCambioDireccion.Stop();                                 
+                    movimientoTimer.Change(Timeout.Infinite, Timeout.Infinite);                  
                 }
+
+                SonidosJuego.ReproducirSonido(@"Resources\SonidoColision.wav");
             }
         }
+      
     }
 }
 

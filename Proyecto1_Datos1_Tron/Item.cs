@@ -12,27 +12,26 @@ namespace Proyecto1_Datos1_Tron
         public Brush ColorItem { get; set; }
         
         public Image Sprite { get; set; }
-        public Rectangle RectanguloItem { get; set; }
+        public Rectangle RectanguloItem = new Rectangle(0, 0, TamanoItem, TamanoItem);
 
         public const int TamanoItem = 20;
 
 
         public Item(Brush colorItem)
         {
-            this.ColorItem = colorItem;           
-            this.RectanguloItem = new Rectangle(0, 0, TamanoItem, TamanoItem);
+            this.ColorItem = colorItem;                     
         }
 
         public void ColocarItemMapa(NodoMapa NodoSeleccionado)
         { 
             this.RectanguloItem = new Rectangle(NodoSeleccionado.RectanguloMapa.X, NodoSeleccionado.RectanguloMapa.Y, TamanoItem, TamanoItem);
         }
+
         public abstract Item Clonar();
        
-
         public void DibujarItem(Graphics g)
         {
-            g.FillRectangle(ColorItem, RectanguloItem);
+            g.DrawImage(Sprite, RectanguloItem);
             
         }
 
