@@ -12,12 +12,14 @@ namespace Proyecto1_Datos1_Tron
 {
     public partial class Form1 : Form
     {
+        public AdministradorSonido MusicaGeneral = new AdministradorSonido();
         public Form1()
         {
             InitializeComponent();
 
             this.BackgroundImage = Image.FromFile(@"Resources\backGroundTRON.png");
             this.BackgroundImageLayout = ImageLayout.Stretch;
+            MusicaGeneral.ReproducirSonido(@"Resources\CancionPrincipal.wav");
 
 
         }
@@ -39,15 +41,12 @@ namespace Proyecto1_Datos1_Tron
 
         }
 
-       
-        
-
-
-
-
-
-        
-
-
+        private void button2_Click(object sender, EventArgs e)
+        {
+            FormGame formGame = new FormGame(true);
+            Console.WriteLine("Modo Versus Activado");
+            formGame.Show();
+            this.Hide();
+        }
     }
 }

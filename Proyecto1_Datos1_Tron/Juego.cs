@@ -18,7 +18,8 @@ namespace Proyecto1_Datos1_Tron
 
         public Mapa mapa;
         public List<Jugador> jugadores;
-        public List<Tuple<Jugador, Jugador>> colisionesPendientes = new List<Tuple<Jugador, Jugador>>();
+        public List<Tuple<Jugador, Jugador>> colisionesPendientes = new List<Tuple<Jugador, Jugador>>();  
+        public bool DosJugadores = false;
 
 
         // TIMERS
@@ -50,7 +51,7 @@ namespace Proyecto1_Datos1_Tron
         public AdministradorSonido Musica = new AdministradorSonido();
 
 
-        public FormGame()
+        public FormGame(bool modoVersus = false)
         {
             InitializeComponent();
 
@@ -61,23 +62,39 @@ namespace Proyecto1_Datos1_Tron
             mapa = new Mapa(58, 34, 20); // Tamaño del mapa con nodos de 20x20 píxeles
             jugadores = new List<Jugador>();
             randomGenerator = new Random();
-            Musica.ReproducirSonido(@"Resources\CancionPrincipal.wav");
+            
 
-            // Crear jugadores en el mapa
-            Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
-            // Jugador jugador2 = new Jugador(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Blue, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P, Keys.O);
-            Bot bot1 = new Bot(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Red);    // Posición personalizada
-            Bot bot2 = new Bot(mapa, 57 * 20, 33 * 20, "Izquierda", "Derecha", Brushes.Orange); // Posición personalizada
-            Bot bot3 = new Bot(mapa, 40 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Yellow); // Posición personalizada
-            Bot bot4 = new Bot(mapa, 0 * 20, 0 * 20, "Derecha", "Izquierda", Brushes.Green);    // Esquina superior izquierda         
+            if (modoVersus)
+            {
+                // Configurar el modo versus: solo dos jugadores humanos
+                DosJugadores = true;
+                Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
+                Jugador jugador2 = new Jugador(mapa, 40 * 20, 10 * 20, "Izquierda", "Derecha", Brushes.Red, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P, Keys.O);
+
+                jugadores.Add(jugador1);
+                jugadores.Add(jugador2);
+               
+            }
+            else
+            {
+
+                // Crear jugadores en el mapa
+                Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
+                // Jugador jugador2 = new Jugador(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Blue, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P, Keys.O);
+                Bot bot1 = new Bot(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Red);    // Posición personalizada
+                Bot bot2 = new Bot(mapa, 57 * 20, 33 * 20, "Izquierda", "Derecha", Brushes.Orange); // Posición personalizada
+                Bot bot3 = new Bot(mapa, 40 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Yellow); // Posición personalizada
+                Bot bot4 = new Bot(mapa, 0 * 20, 0 * 20, "Derecha", "Izquierda", Brushes.Green);    // Esquina superior izquierda         
+               
 
 
-            jugadores.Add(jugador1);
-            // jugadores.Add(jugador2);
-            jugadores.Add(bot1);
-            jugadores.Add(bot2);
-            jugadores.Add(bot3);
-            jugadores.Add(bot4);
+                jugadores.Add(jugador1);
+                // jugadores.Add(jugador2);
+                jugadores.Add(bot1);
+                jugadores.Add(bot2);
+                jugadores.Add(bot3);
+                jugadores.Add(bot4);
+            }
 
             this.KeyDown += new KeyEventHandler(OnKeyDown);
             pictureBox1.Paint += new PaintEventHandler(PictureBox1_Paint);
@@ -117,6 +134,7 @@ namespace Proyecto1_Datos1_Tron
             actualizacionTimer.Tick += new EventHandler(OnTimerTick);
             sonidoCambioDireccion.Play();
             actualizacionTimer.Start();
+            MandarIndicadores();
 
         }
 
@@ -127,6 +145,9 @@ namespace Proyecto1_Datos1_Tron
             MostrarPoderes();
             BotarObjetos();
             ActualizarListaJugadores();
+            confirmarVictoria();
+
+
 
             pictureBox1.Invalidate();
         }
@@ -139,7 +160,8 @@ namespace Proyecto1_Datos1_Tron
                 jugador.TeclasPoderes(e.KeyCode);
             }
         }
- 
+      
+
         private void FormGame_Load(object sender, EventArgs e)
         {
 
@@ -161,13 +183,19 @@ namespace Proyecto1_Datos1_Tron
             var itemsListaCopy = new List<Item>(itemsLista);
             foreach (var item in itemsListaCopy)
             {
-                item.DibujarItem(e.Graphics);
+                if (item != null)
+                {
+                    item.DibujarItem(e.Graphics);
+                }               
             }
 
             var poderesListaCopy = new List<Poder>(poderesLista);
             foreach (var poder in poderesListaCopy)
             {
-                poder.DibujarPoder(e.Graphics);
+                if (poder != null)
+                {
+                    poder.DibujarPoder(e.Graphics);
+                }
             }
 
             foreach (var bomba in bombasActivadas)
@@ -193,39 +221,58 @@ namespace Proyecto1_Datos1_Tron
             }
             
         }
+
+        public void MandarIndicadores()
+        {
+            
+            jugadores[0].RecibirInformacionForm((Label)Controls["lblCombustible"], (ProgressBar)Controls["progressBarCombustible"]);
+
+            // Actualizar indicadores para el jugador 2 si existe
+            if (DosJugadores)
+            {
+                jugadores[1].RecibirInformacionForm((Label)Controls["lblCombustible2"], (ProgressBar)Controls["progressBarCombustible2"]);
+            }
+        }
+     
+
         public void VerificarColisionesPendientes()
         {
-            var colisionesPendientesCopia = new List<Tuple<Jugador, Jugador>>(colisionesPendientes);
 
-            foreach (var colision in colisionesPendientesCopia)
-            {
-                var jugador1 = colision.Item1;
-                var jugador2 = colision.Item2;
+            lock (colisionesPendientes)
+            { 
 
-                if (jugador1.escudoActivo)
+                var colisionesPendientesCopia = new List<Tuple<Jugador, Jugador>>(colisionesPendientes);
+
+                foreach (var colision in colisionesPendientesCopia)
                 {
-                    jugador2.vivo = false;
-                    jugador2.DestruccionMoto();
-                    Console.WriteLine("ColisionDada");
-                }
-                else if (jugador2.escudoActivo)
-                {
-                    jugador1.vivo = false;
-                    jugador1.DestruccionMoto();
-                    Console.WriteLine("ColisionDada");
-                }
-                else
-                {
-                    jugador1.vivo = false;
-                    jugador2.vivo = false;
-                    jugador1.DestruccionMoto();
-                    jugador2.DestruccionMoto();
-                    Console.WriteLine("ColisionDada");
-                }    
-                
+                    var jugador1 = colision.Item1;
+                    var jugador2 = colision.Item2;
+
+                    if (jugador1.escudoActivo)
+                    {
+                        jugador2.vivo = false;
+                        jugador2.DestruccionMoto();
+                        Console.WriteLine("ColisionDada");
+                    }
+                    else if (jugador2.escudoActivo)
+                    {
+                        jugador1.vivo = false;
+                        jugador1.DestruccionMoto();
+                        Console.WriteLine("ColisionDada");
+                    }
+                    else
+                    {
+                        jugador1.vivo = false;
+                        jugador2.vivo = false;
+                        jugador1.DestruccionMoto();
+                        jugador2.DestruccionMoto();
+                        Console.WriteLine("ColisionDada");
+                    }
+
+                    colisionesPendientes.Remove(colision);
+
+                }               
             }
-
-            colisionesPendientes.Clear();
         }
 
         public void ActualizarListaJugadores()
@@ -324,10 +371,44 @@ namespace Proyecto1_Datos1_Tron
                     if (i >= SpritePoderes.Length) break;
                     SpritePoderes[i].Image = poder.SpritePoder;
                     i++;
-                }
+                }              
 
             }
+            
+            if(DosJugadores && jugadores.Count > 1)
+            {
+                PictureBox[] SpritePoderes2 = { PoderPrimero2, PoderSegundo2, PoderTercero2 };
+
+                foreach (var pictureBox in SpritePoderes2)
+                {
+                    pictureBox.Image = null;
+                }
+
+                int j = 0;
+                foreach (var poder in jugadores[1].Poderes)
+                {
+                    if (poder != null)
+                    {
+                        if (j >= SpritePoderes2.Length) break;
+                        SpritePoderes2[j].Image = poder.SpritePoder;
+                        j++;
+                    }
+
+                }              
+            }
                 
+        }
+
+        public void confirmarVictoria()
+        {
+            if (jugadores.Count == 1)
+            {
+                actualizacionTimer.Stop();
+                Victoria pantallaVictoria = new Victoria();
+                Console.WriteLine("Modo Versus Activado");
+                pantallaVictoria.Show();
+                this.Hide();
+            }
         }
 
         public void BotarObjetos()
@@ -375,6 +456,11 @@ namespace Proyecto1_Datos1_Tron
         }
 
         private void pictureBox15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
         {
 
         }

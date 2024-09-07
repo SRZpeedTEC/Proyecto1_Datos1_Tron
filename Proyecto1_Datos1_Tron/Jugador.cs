@@ -42,6 +42,9 @@ namespace Proyecto1_Datos1_Tron
         public Keys PowerKey { get; set; }
         public Keys ChangeKey { get; set; }
 
+        public Label lblinfoCombustible { get; set; }
+        public ProgressBar progressBarinfoCombustible { get; set; }
+
 
         public bool vivo { get; set; }
         public Mapa mapaJuego { get; set; }
@@ -193,27 +196,35 @@ namespace Proyecto1_Datos1_Tron
             }
         }
 
-       
+
         public void AlternarPoder()
         {
-            Console.WriteLine("Alternar Poderes");
             if (!Poderes.VacioPila() && Poderes.elementos.Contador > 1)
             {
+                // Sacar el poder de la cima de la pila
                 Poder poderActual = Poderes.PopPeek();
-                Poderes.MeterPilaFinal(poderActual);
+
+                // Crear una pila temporal para almacenar los otros poderes
+                Stack<Poder> pilaTemporal = new Stack<Poder>();
+
+                // Mover los otros poderes a la pila temporal
+                while (!Poderes.VacioPila())
+                {
+                    pilaTemporal.Push(Poderes.PopPeek());
+                }
+
+                // Poner el poder que estaba en la cima al fondo de la pila
+                Poderes.Push(poderActual);
+
+                // Regresar los otros poderes a la pila original
+                while (pilaTemporal.Count > 0)
+                {
+                    Poderes.Push(pilaTemporal.Pop());
+                }
             }
         }
-        public virtual void AplicarPoder()
-        {
-            if (!Poderes.VacioPila())
-            {
-                poderAplicado = true;
-                Poder poderActual = Poderes.PopPeek();
-                poderActual.EfectoPoder(this);
-                
-            }
-        } 
-        public void ActivarEscudo()
+
+            public void ActivarEscudo()
         {   
             
             escudoActivo = true;
@@ -247,6 +258,16 @@ namespace Proyecto1_Datos1_Tron
         private void ReiniciarTimer()
         {
             movimientoTimer.Change(0, Velocidad);
+        }
+
+        public virtual void AplicarPoder()
+        {
+            if (!Poderes.VacioPila())
+            {
+                poderAplicado = true;
+                Poder poderActual = Poderes.PopPeek();
+                poderActual.EfectoPoder(this);
+            }
         }
 
         public virtual void TeclasPoderes(Keys key)
@@ -414,16 +435,19 @@ namespace Proyecto1_Datos1_Tron
 
         }
 
+        public void RecibirInformacionForm(Label lblCombustible, ProgressBar progressBarCombustible)
+        {
+            this.lblinfoCombustible = lblCombustible;
+            this.progressBarinfoCombustible = progressBarCombustible;
+        }
+
         public virtual void FuncionesPorTick()
         {
 
-            FormGame form = (FormGame)Application.OpenForms["FormGame"];
-            Label lblCombustible = (Label)form.Controls["lblCombustible"];
-            ProgressBar progressBarCombustible = (ProgressBar)form.Controls["progressBarCombustible"];
-
+           
             Mover();
             GastoCombustible();
-            ActualizarCombustible(lblCombustible, progressBarCombustible);
+            ActualizarCombustible(lblinfoCombustible, progressBarinfoCombustible);
             
         }
        

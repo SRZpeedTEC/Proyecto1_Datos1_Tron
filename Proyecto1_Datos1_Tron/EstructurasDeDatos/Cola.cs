@@ -10,9 +10,7 @@ namespace Proyecto1_Datos1_Tron
     public class Cola<T> : IEnumerable<T>
     {
         public ListaEnlazada<T> elementos = new ListaEnlazada<T>();
-
-      
-
+    
         public void Enqueue(T elemento)
         {
             elementos.AgregarUltimo(elemento);

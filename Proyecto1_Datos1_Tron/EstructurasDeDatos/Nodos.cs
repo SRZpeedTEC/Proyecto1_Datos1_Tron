@@ -9,6 +9,7 @@ namespace Proyecto1_Datos1_Tron
     {
         public T Valor { get; set; }
         public Nodos<T> Siguiente { get; set; }
+       
 
         public Nodos(T valor)
         {

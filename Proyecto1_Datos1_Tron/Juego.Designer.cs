@@ -46,6 +46,15 @@
             this.PoderPrimero = new System.Windows.Forms.PictureBox();
             this.PoderSegundo = new System.Windows.Forms.PictureBox();
             this.PoderTercero = new System.Windows.Forms.PictureBox();
+            this.Poderes2 = new System.Windows.Forms.Label();
+            this.lblCombustible2 = new System.Windows.Forms.Label();
+            this.pictureBox18 = new System.Windows.Forms.PictureBox();
+            this.pictureBox17 = new System.Windows.Forms.PictureBox();
+            this.pictureBox16 = new System.Windows.Forms.PictureBox();
+            this.progressBarCombustible2 = new System.Windows.Forms.ProgressBar();
+            this.PoderPrimero2 = new System.Windows.Forms.PictureBox();
+            this.PoderSegundo2 = new System.Windows.Forms.PictureBox();
+            this.PoderTercero2 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).BeginInit();
@@ -61,6 +70,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.PoderPrimero)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PoderSegundo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PoderTercero)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox18)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox17)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox16)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PoderPrimero2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PoderSegundo2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PoderTercero2)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox9
@@ -236,12 +251,111 @@
             this.PoderTercero.TabIndex = 24;
             this.PoderTercero.TabStop = false;
             // 
+            // Poderes2
+            // 
+            this.Poderes2.AutoSize = true;
+            this.Poderes2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Poderes2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.Poderes2.Location = new System.Drawing.Point(780, 695);
+            this.Poderes2.Name = "Poderes2";
+            this.Poderes2.Size = new System.Drawing.Size(88, 24);
+            this.Poderes2.TabIndex = 25;
+            this.Poderes2.Text = "Poderes";
+            this.Poderes2.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // lblCombustible2
+            // 
+            this.lblCombustible2.AutoSize = true;
+            this.lblCombustible2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCombustible2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.lblCombustible2.Location = new System.Drawing.Point(977, 713);
+            this.lblCombustible2.Name = "lblCombustible2";
+            this.lblCombustible2.Size = new System.Drawing.Size(216, 24);
+            this.lblCombustible2.TabIndex = 26;
+            this.lblCombustible2.Text = "Combustible 100 / 100";
+            // 
+            // pictureBox18
+            // 
+            this.pictureBox18.BackColor = System.Drawing.Color.Black;
+            this.pictureBox18.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox18.Location = new System.Drawing.Point(743, 734);
+            this.pictureBox18.Name = "pictureBox18";
+            this.pictureBox18.Size = new System.Drawing.Size(52, 51);
+            this.pictureBox18.TabIndex = 27;
+            this.pictureBox18.TabStop = false;
+            // 
+            // pictureBox17
+            // 
+            this.pictureBox17.BackColor = System.Drawing.Color.Black;
+            this.pictureBox17.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox17.Location = new System.Drawing.Point(801, 734);
+            this.pictureBox17.Name = "pictureBox17";
+            this.pictureBox17.Size = new System.Drawing.Size(52, 51);
+            this.pictureBox17.TabIndex = 28;
+            this.pictureBox17.TabStop = false;
+            // 
+            // pictureBox16
+            // 
+            this.pictureBox16.BackColor = System.Drawing.Color.Black;
+            this.pictureBox16.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox16.Location = new System.Drawing.Point(859, 734);
+            this.pictureBox16.Name = "pictureBox16";
+            this.pictureBox16.Size = new System.Drawing.Size(52, 51);
+            this.pictureBox16.TabIndex = 29;
+            this.pictureBox16.TabStop = false;
+            // 
+            // progressBarCombustible2
+            // 
+            this.progressBarCombustible2.Location = new System.Drawing.Point(970, 751);
+            this.progressBarCombustible2.Name = "progressBarCombustible2";
+            this.progressBarCombustible2.Size = new System.Drawing.Size(232, 22);
+            this.progressBarCombustible2.TabIndex = 30;
+            // 
+            // PoderPrimero2
+            // 
+            this.PoderPrimero2.BackColor = System.Drawing.Color.Black;
+            this.PoderPrimero2.Location = new System.Drawing.Point(752, 742);
+            this.PoderPrimero2.Name = "PoderPrimero2";
+            this.PoderPrimero2.Size = new System.Drawing.Size(32, 30);
+            this.PoderPrimero2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PoderPrimero2.TabIndex = 31;
+            this.PoderPrimero2.TabStop = false;
+            // 
+            // PoderSegundo2
+            // 
+            this.PoderSegundo2.BackColor = System.Drawing.Color.Black;
+            this.PoderSegundo2.Location = new System.Drawing.Point(810, 742);
+            this.PoderSegundo2.Name = "PoderSegundo2";
+            this.PoderSegundo2.Size = new System.Drawing.Size(32, 30);
+            this.PoderSegundo2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PoderSegundo2.TabIndex = 32;
+            this.PoderSegundo2.TabStop = false;
+            // 
+            // PoderTercero2
+            // 
+            this.PoderTercero2.BackColor = System.Drawing.Color.Black;
+            this.PoderTercero2.Location = new System.Drawing.Point(869, 742);
+            this.PoderTercero2.Name = "PoderTercero2";
+            this.PoderTercero2.Size = new System.Drawing.Size(32, 30);
+            this.PoderTercero2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PoderTercero2.TabIndex = 33;
+            this.PoderTercero2.TabStop = false;
+            // 
             // FormGame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(35)))), ((int)(((byte)(108)))));
             this.ClientSize = new System.Drawing.Size(1288, 797);
+            this.Controls.Add(this.PoderTercero2);
+            this.Controls.Add(this.PoderSegundo2);
+            this.Controls.Add(this.PoderPrimero2);
+            this.Controls.Add(this.progressBarCombustible2);
+            this.Controls.Add(this.pictureBox16);
+            this.Controls.Add(this.pictureBox17);
+            this.Controls.Add(this.pictureBox18);
+            this.Controls.Add(this.lblCombustible2);
+            this.Controls.Add(this.Poderes2);
             this.Controls.Add(this.PoderTercero);
             this.Controls.Add(this.PoderSegundo);
             this.Controls.Add(this.PoderPrimero);
@@ -281,6 +395,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.PoderPrimero)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PoderSegundo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PoderTercero)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox18)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox17)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox16)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PoderPrimero2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PoderSegundo2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PoderTercero2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -305,5 +425,14 @@
         private System.Windows.Forms.PictureBox PoderPrimero;
         private System.Windows.Forms.PictureBox PoderSegundo;
         private System.Windows.Forms.PictureBox PoderTercero;
+        private System.Windows.Forms.Label Poderes2;
+        private System.Windows.Forms.Label lblCombustible2;
+        private System.Windows.Forms.PictureBox pictureBox18;
+        private System.Windows.Forms.PictureBox pictureBox17;
+        private System.Windows.Forms.PictureBox pictureBox16;
+        private System.Windows.Forms.ProgressBar progressBarCombustible2;
+        private System.Windows.Forms.PictureBox PoderPrimero2;
+        private System.Windows.Forms.PictureBox PoderSegundo2;
+        private System.Windows.Forms.PictureBox PoderTercero2;
     }
 }

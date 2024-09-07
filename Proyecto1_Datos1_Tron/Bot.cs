@@ -31,7 +31,6 @@ namespace Proyecto1_Datos1_Tron
         public override void FuncionesPorTick()
         {
             Mover();
-            AplicarPoder();
             GastoCombustible();
         }
 
@@ -96,8 +95,7 @@ namespace Proyecto1_Datos1_Tron
                     {
                         aplicandoItem = true;
                         Task.Delay(1000).ContinueWith(t =>
-                        {
-                            AplicarPoder();
+                        {                           
                             aplicandoItem = false;
                         });
                     }
@@ -116,7 +114,6 @@ namespace Proyecto1_Datos1_Tron
                         aplicandoPoder = true;
                         Task.Delay(1000).ContinueWith(t =>
                         {
-                            AplicarPoder();
                             aplicandoPoder = false;
                         });
                     }

@@ -17,7 +17,7 @@ namespace Proyecto1_Datos1_Tron
             Random rnd = new Random();
             this.ColorItem = colorItem;
             this.Sprite = Image.FromFile(@"Resources\EstelaCrecimiento.png");
-            this.CantidadEstela = rnd.Next(1, 2);
+            this.CantidadEstela = rnd.Next(1, 10);
         }
 
         public override void EfectoItem(Jugador jugador)
