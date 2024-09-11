@@ -15,11 +15,32 @@ namespace Proyecto1_Datos1_Tron
         public Victoria()
         {
             InitializeComponent();
+
+            this.BackgroundImage = Image.FromFile(@"Resources\ScreenVictory.png");
+            this.BackgroundImageLayout = ImageLayout.Stretch;
         }
 
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void Victoria_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Form1 form1 = Application.OpenForms.OfType<Form1>().FirstOrDefault();
+            FormGame form = (FormGame)Application.OpenForms["FormGame"];
+
+            if (form1 != null)
+            {
+                form1.Show();
+                this.Close(); // Opcional: cerrar la ventana actual si lo deseas
+                form.Close();
+            }
         }
     }
 }

@@ -30,11 +30,7 @@ namespace Proyecto1_Datos1_Tron
         }
 
         public T Peek()
-        {
-            if (VacioPila())
-            {
-                throw new InvalidOperationException("La pila está vacía");
-            }
+        {          
             return elementos.ObtenerPrimero();
         }
 

@@ -401,8 +401,13 @@ namespace Proyecto1_Datos1_Tron
 
         public void confirmarVictoria()
         {
-            if (jugadores.Count == 1)
+            if (jugadores.Count <= 1)
             {
+                foreach (var jugadores in jugadores)
+                {
+                    jugadores.DestruccionFinal();
+                }
+
                 actualizacionTimer.Stop();
                 Victoria pantallaVictoria = new Victoria();
                 Console.WriteLine("Modo Versus Activado");

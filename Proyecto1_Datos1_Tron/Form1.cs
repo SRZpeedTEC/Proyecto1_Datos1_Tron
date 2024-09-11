@@ -36,8 +36,7 @@ namespace Proyecto1_Datos1_Tron
             Console.WriteLine("Button Clicked");
             formGame.Show();
             this.Hide();
-
-            
+         
 
         }
 

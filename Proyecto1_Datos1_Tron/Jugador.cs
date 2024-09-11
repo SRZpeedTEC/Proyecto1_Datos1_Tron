@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 using FormTimer = System.Windows.Forms.Timer;
 using ThreadTimer = System.Threading.Timer;
+using System.Security.Cryptography;
 
 namespace Proyecto1_Datos1_Tron
 {
@@ -63,7 +64,7 @@ namespace Proyecto1_Datos1_Tron
         public Jugador(Mapa mapaJuego, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey, Keys PowerKey, Keys ChangeKey)
         {
             Random rnd = new Random();
-            Velocidad = 55;
+            Velocidad = rnd.Next(50, 60);
             CombustibleTanque = 100;
             Combustible = CombustibleTanque;
             vivo = true;
@@ -468,7 +469,25 @@ namespace Proyecto1_Datos1_Tron
                 SonidosJuego.ReproducirSonido(@"Resources\SonidoColision.wav");
             }
         }
-      
+
+        public void DestruccionFinal()
+        {
+            
+            
+                while (Estela.Contador > 0)
+                {
+                    Rectangle segmento = Estela.ObtenerPrimero();
+                    NodoMapa nodoSegmento = mapaJuego.ObtenerNodo(segmento);
+                    nodoSegmento.ocupado = false;
+                    Estela.RemoverPrimero();
+                    sonidoCambioDireccion.Stop();
+                    movimientoTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                }
+
+                this.vivo = false;
+            
+        }
+
     }
 }
 

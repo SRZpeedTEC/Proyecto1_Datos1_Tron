@@ -141,6 +141,26 @@ namespace Proyecto1_Datos1_Tron.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap FinJuego {
+            get {
+                object obj = ResourceManager.GetObject("FinJuego", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MenuF {
+            get {
+                object obj = ResourceManager.GetObject("MenuF", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Music {
             get {
                 object obj = ResourceManager.GetObject("Music", resourceCulture);
@@ -174,6 +194,16 @@ namespace Proyecto1_Datos1_Tron.Properties {
         internal static System.IO.UnmanagedMemoryStream RecoleccionObjeto {
             get {
                 return ResourceManager.GetStream("RecoleccionObjeto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ScreenVictory {
+            get {
+                object obj = ResourceManager.GetObject("ScreenVictory", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
