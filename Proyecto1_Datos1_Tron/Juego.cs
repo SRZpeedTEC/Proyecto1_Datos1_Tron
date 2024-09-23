@@ -68,8 +68,8 @@ namespace Proyecto1_Datos1_Tron
             {
                 // Configurar el modo versus: solo dos jugadores humanos
                 DosJugadores = true;
-                Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
-                Jugador jugador2 = new Jugador(mapa, 40 * 20, 10 * 20, "Izquierda", "Derecha", Brushes.Red, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P, Keys.O);
+                Jugador jugador1 = new Jugador(mapa, 1, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
+                Jugador jugador2 = new Jugador(mapa, 2, 40 * 20, 10 * 20, "Izquierda", "Derecha", Brushes.Red, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P, Keys.O);
 
                 jugadores.Add(jugador1);
                 jugadores.Add(jugador2);
@@ -79,12 +79,12 @@ namespace Proyecto1_Datos1_Tron
             {
 
                 // Crear jugadores en el mapa
-                Jugador jugador1 = new Jugador(mapa, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
+                Jugador jugador1 = new Jugador(mapa, 1, 10 * 20, 10 * 20, "Derecha", "Izquierda", Brushes.Blue, Keys.W, Keys.S, Keys.D, Keys.A, Keys.R, Keys.Q);
                 // Jugador jugador2 = new Jugador(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Blue, Keys.Up, Keys.Down, Keys.Right, Keys.Left, Keys.P, Keys.O);
-                Bot bot1 = new Bot(mapa, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Red);    // Posición personalizada
-                Bot bot2 = new Bot(mapa, 57 * 20, 33 * 20, "Izquierda", "Derecha", Brushes.Orange); // Posición personalizada
-                Bot bot3 = new Bot(mapa, 40 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Yellow); // Posición personalizada
-                Bot bot4 = new Bot(mapa, 0 * 20, 0 * 20, "Derecha", "Izquierda", Brushes.Green);    // Esquina superior izquierda         
+                Bot bot1 = new Bot(mapa, 2, 20 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Red);    // Posición personalizada
+                Bot bot2 = new Bot(mapa, 3, 57 * 20, 33 * 20, "Izquierda", "Derecha", Brushes.Orange); // Posición personalizada
+                Bot bot3 = new Bot(mapa, 4, 40 * 20, 20 * 20, "Izquierda", "Derecha", Brushes.Yellow); // Posición personalizada
+                Bot bot4 = new Bot(mapa, 5, 0 * 20, 0 * 20, "Derecha", "Izquierda", Brushes.Green);    // Esquina superior izquierda         
                
 
 
@@ -198,7 +198,8 @@ namespace Proyecto1_Datos1_Tron
                 }
             }
 
-            foreach (var bomba in bombasActivadas)
+            var bombasActivadasCopy = new List<Bomba>(bombasActivadas);
+            foreach (var bomba in bombasActivadasCopy)
             {
                 bomba.Sprite = Image.FromFile(@"Resources\bombaExplotando.png");
                 bomba.DibujarBombaExlotando(e.Graphics);
@@ -402,14 +403,16 @@ namespace Proyecto1_Datos1_Tron
         public void confirmarVictoria()
         {
             if (jugadores.Count <= 1)
-            {
-                foreach (var jugadores in jugadores)
+            {          
+                List<int> Ganadores = new List<int>();
+                foreach (var jugador in jugadores)
                 {
-                    jugadores.DestruccionFinal();
+                    Ganadores.Add(jugador.numeroJugador);
+                    jugador.DestruccionFinal();
                 }
 
                 actualizacionTimer.Stop();
-                Victoria pantallaVictoria = new Victoria();
+                Victoria pantallaVictoria = new Victoria(Ganadores);
                 Console.WriteLine("Modo Versus Activado");
                 pantallaVictoria.Show();
                 this.Hide();

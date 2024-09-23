@@ -20,6 +20,7 @@ namespace Proyecto1_Datos1_Tron
         public int CombustibleTanque { get; set; }
         public int Combustible { get; set; }
         public int Kilometraje = 0;
+        public int numeroJugador { get; set; }
         public ListaEnlazada<Rectangle> Estela { get; set; }
         public int TamanoEstela = 3; // Tamaño de la estela
         public ThreadTimer movimientoTimer;
@@ -61,12 +62,13 @@ namespace Proyecto1_Datos1_Tron
         public bool hiperVelocidadActiva = false;   
         public bool poderAplicado = false;
 
-        public Jugador(Mapa mapaJuego, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey, Keys PowerKey, Keys ChangeKey)
+        public Jugador(Mapa mapaJuego,int numeroJugador, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela, Keys UpKey, Keys DownKey, Keys RightKey, Keys LeftKey, Keys PowerKey, Keys ChangeKey)
         {
             Random rnd = new Random();
             Velocidad = rnd.Next(50, 60);
             CombustibleTanque = 100;
             Combustible = CombustibleTanque;
+            this.numeroJugador = numeroJugador;
             vivo = true;
             movimientoTimer = new ThreadTimer(TickHandler, null, 100, Velocidad);
 
@@ -337,15 +339,23 @@ namespace Proyecto1_Datos1_Tron
                 }
             }          
         }
-        
+
         public void ActualizarCombustible(Label lblCombustible, ProgressBar progressBarCombustible)
         {
+            if (lblCombustible.IsDisposed)
+            {
+                return; // Exit the method if the label is disposed
+            }
+
             if (lblCombustible.InvokeRequired)
             {
                 lblCombustible.Invoke(new Action(() =>
                 {
-                    lblCombustible.Text = $"Combustible: {Combustible} / {CombustibleTanque}";
-                    progressBarCombustible.Value = Combustible;
+                    if (!lblCombustible.IsDisposed)
+                    {
+                        lblCombustible.Text = $"Combustible: {Combustible} / {CombustibleTanque}";
+                        progressBarCombustible.Value = Combustible;
+                    }
                 }));
             }
             else

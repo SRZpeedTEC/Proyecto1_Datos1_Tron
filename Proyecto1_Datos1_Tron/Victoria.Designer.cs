@@ -30,6 +30,7 @@
         {
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.Ganadorlbl = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -52,11 +53,26 @@
             this.label1.TabIndex = 0;
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
+            // Ganadorlbl
+            // 
+            this.Ganadorlbl.AutoSize = true;
+            this.Ganadorlbl.BackColor = System.Drawing.Color.Transparent;
+            this.Ganadorlbl.Font = new System.Drawing.Font("Playbill", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Ganadorlbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(33)))), ((int)(((byte)(73)))));
+            this.Ganadorlbl.Location = new System.Drawing.Point(234, 231);
+            this.Ganadorlbl.Name = "Ganadorlbl";
+            this.Ganadorlbl.Size = new System.Drawing.Size(157, 49);
+            this.Ganadorlbl.TabIndex = 2;
+            this.Ganadorlbl.Text = "GANADOR :";
+            this.Ganadorlbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Ganadorlbl.Click += new System.EventHandler(this.label2_Click);
+            // 
             // Victoria
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(704, 618);
+            this.Controls.Add(this.Ganadorlbl);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Name = "Victoria";
@@ -64,6 +80,7 @@
             this.Text = "Victoria";
             this.Load += new System.EventHandler(this.Victoria_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -71,5 +88,6 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label Ganadorlbl;
     }
 }

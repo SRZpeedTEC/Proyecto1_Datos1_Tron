@@ -16,8 +16,8 @@ namespace Proyecto1_Datos1_Tron
         public bool aplicandoPoder = false; // Para evitar que se aplique un poder más de una vez
         public Timer DireccionTimer;
 
-        public Bot(Mapa mapaJuego, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela)
-            : base(mapaJuego, posicionInicialX, posicionInicialY, DireccionActual, DireccionProhibida, colorEstela, Keys.None, Keys.None, Keys.None, Keys.None, Keys.None, Keys.None)
+        public Bot(Mapa mapaJuego, int numeroJugador, int posicionInicialX, int posicionInicialY, string DireccionActual, string DireccionProhibida, Brush colorEstela)
+            : base(mapaJuego, numeroJugador, posicionInicialX, posicionInicialY, DireccionActual, DireccionProhibida, colorEstela, Keys.None, Keys.None, Keys.None, Keys.None, Keys.None, Keys.None)
         {
             random = new Random();
             DireccionTimer = new Timer();
@@ -66,6 +66,11 @@ namespace Proyecto1_Datos1_Tron
 
                 NodoMapa nodoDestino = mapaJuego.ObtenerNodo(nuevaPosicion);
                 FormGame form = (FormGame)Application.OpenForms["FormGame"];
+                if (form == null)
+                {
+                    // Handle the case where form is null
+                    return;
+                }
                 List<Jugador> otrosJugadores = form.jugadores;
 
                 foreach (var otroJugador in otrosJugadores)

@@ -12,12 +12,15 @@ namespace Proyecto1_Datos1_Tron
 {
     public partial class Victoria : Form
     {
-        public Victoria()
+        public Victoria(List<int> Ganador)
         {
             InitializeComponent();
 
             this.BackgroundImage = Image.FromFile(@"Resources\ScreenVictory.png");
             this.BackgroundImageLayout = ImageLayout.Stretch;
+
+            this.Ganadorlbl.Text = $"Ganador: Jugador {string.Join(", ", Ganador)}";
+
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -41,6 +44,11 @@ namespace Proyecto1_Datos1_Tron
                 this.Close(); // Opcional: cerrar la ventana actual si lo deseas
                 form.Close();
             }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

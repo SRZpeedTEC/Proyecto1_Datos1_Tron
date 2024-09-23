@@ -52,7 +52,7 @@ namespace Proyecto1_Datos1_Tron
             }
 
             FormGame form = (FormGame)Application.OpenForms["FormGame"];
-            form.ManejarExplosion(NodosExplosion, jugador.colorEstela);
+            form.ManejarExplosion(NodosExplosion, Brushes.Gray);
         }
 
         public void DibujarBombaExlotando(Graphics g)
